@@ -19,8 +19,7 @@ function TorchModel:__init(model_path, backend, input_sz, layer, input_image_pat
   self.seed = seed
   self.gpuid = gpuid
   self.out_path = out_path
-  self:loadModel(model_path)
-    
+
   torch.manualSeed(self.seed)
   torch.setdefaulttensortype('torch.FloatTensor')
   lfs.mkdir(self.out_path)
@@ -35,9 +34,8 @@ function TorchModel:__init(model_path, backend, input_sz, layer, input_image_pat
 
   -- neuraltalk2-specific dependencies
   -- https://github.com/karpathy/neuraltalk2
-  local lm_misc_utils = require 'neuraltalk2.misc.utils'
-  require 'neuraltalk2.misc.LanguageModel'
-  local net_utils = require 'neuraltalk2.misc.net_utils'
+
+  self:loadModel(model_path)
 
 end
 
@@ -45,6 +43,10 @@ end
 function TorchModel:loadModel(model_path)
 
   -- Load the models
+  local lm_misc_utils = require 'neuraltalk2.misc.utils'
+  require 'neuraltalk2.misc.LanguageModel'
+  local net_utils = require 'neuraltalk2.misc.net_utils'
+
   self.net = torch.load(model_path)
   local cnn_lm_model = self.net
   local cnn = cnn_lm_model.protos.cnn
@@ -61,6 +63,9 @@ function TorchModel:loadModel(model_path)
   lm:evaluate()
   cnn:evaluate()
   self.cnn = cnn
+  self.lm = lm
+  self.net_utils = net_utils
+  self.vocab = vocab
 
 end
 
@@ -78,7 +83,7 @@ function TorchModel:predict(input_image_path, input_sz, input_sz)
     self.cnn:cuda()
     cnn_gb:cuda()
     img = img:cuda()
-    lm:cuda()
+    self.lm:cuda()
   end
 
   -- Forward pass
@@ -87,10 +92,10 @@ function TorchModel:predict(input_image_path, input_sz, input_sz)
   im_feat_gb = cnn_gb:forward(img)
 
   -- get the prediction from model
-  local seq, seqlogps = lm:sample(im_feat, sample_opts)
+  local seq, seqlogps = self.lm:sample(im_feat, sample_opts)
   seq[{{}, 1}] = seq
 
-  local caption = net_utils.decode_sequence(vocab, seq)
+  local caption = self.net_utils.decode_sequence(self.vocab, seq)
 
   if self.caption == '' then
     print("No caption provided, using generated caption for Grad-CAM.")
@@ -102,30 +107,36 @@ function TorchModel:predict(input_image_path, input_sz, input_sz)
 
   local seq_length = self.seq_length or 16
 
-  local labels = utils.sent_to_label(vocab, self.caption, seq_length)
+  local labels = utils.sent_to_label(self.vocab, self.caption, seq_length)
   if self.gpuid >=0 then labels = labels:cuda() end
 
-  local logprobs = lm:forward({im_feat, labels})
+  local logprobs = self.lm:forward({im_feat, labels})
 
   local doutput = utils.create_grad_input_lm(logprobs, labels)
   if self.gpuid >=0 then doutput = doutput:cuda() end
 
   -- lm backward
-  local dlm, ddummy = unpack(lm:backward({im_feat, labels}, doutput))
+  local dlm, ddummy = unpack(self.lm:backward({im_feat, labels}, doutput))
   local dcnn = dlm[1]
 
   -- Grad-CAM
-  local gcam = utils.grad_cam(cnn, self.layer, dcnn)
+  local gcam = utils.grad_cam(self.cnn, self.layer, dcnn)
   gcam = image.scale(gcam:float(), self.input_sz, self.input_sz)
+
+  local result = {}
   local hm = utils.to_heatmap(gcam)
   image.save(self.out_path .. 'caption_gcam_'  .. self.caption .. '.png', image.toDisplayTensor(hm))
+  result[0] = self.out_path .. 'caption_gcam_'  .. self.caption .. '.png'
 
   -- Guided Backprop
   local gb_viz = cnn_gb:backward(img, dcnn)
   image.save(self.out_path .. 'caption_gb_' .. self.caption .. '.png', image.toDisplayTensor(gb_viz))
+  result[1] = self.out_path .. 'caption_gb_' .. self.caption .. '.png'
 
   -- Guided Grad-CAM
   local gb_gcam = gb_viz:float():cmul(gcam:expandAs(gb_viz))
   image.save(self.out_path .. 'caption_gb_gcam_' .. self.caption .. '.png', image.toDisplayTensor(gb_gcam))
+  result[2] = self.out_path .. 'caption_gb_gcam_' .. self.caption .. '.png'
+  return result
 
 end
