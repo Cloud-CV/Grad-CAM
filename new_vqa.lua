@@ -180,12 +180,11 @@ function TorchModel:predict(input_image_path, input_sz, input_sz, input_question
   answer = self.json_file['ix_to_ans'][tostring(pred[{1, 1}])]
 
   local inv_vocab = utils.table_invert(self.json_file['ix_to_ans'])
-  if input_answer ~= '' then answer_idx = inv_vocab[input_answer] else input_answer = answer answer_idx = inv_vocab[answer] end
+  if input_answer ~= '' and inv_vocab[input_answer] ~= nil then answer_idx = inv_vocab[input_answer] else input_answer = answer answer_idx = inv_vocab[answer] end
 
   print("Question: ", input_question)
   print("Predicted answer: ", answer)
   print("Grad-CAM answer: ", input_answer)
-
   -- Set gradInput
   local doutput = utils.create_grad_input(self.multimodal_net.modules[#self.multimodal_net.modules], answer_idx)
 

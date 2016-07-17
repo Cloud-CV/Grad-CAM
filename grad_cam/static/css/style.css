@@ -7,3 +7,6 @@
 	padding: 6px;
 }
 
+#inputImage{
+	max-width: 100% !important;
+}

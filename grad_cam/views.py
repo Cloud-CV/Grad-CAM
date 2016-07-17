@@ -18,6 +18,8 @@ def vqa(request):
         input_question = request.POST.get('question', '')
         input_answer = request.POST.get('answer', None)
         image = request.FILES['file']
+        print "REQUEST OBJECT IS", request.POST
+        print "REQUEST.FILES IS ", request.FILES
 
         random_uuid = uuid.uuid1()
         # handle image upload

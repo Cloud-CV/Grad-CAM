@@ -20,7 +20,7 @@
     </div>
   </nav>
   <div class="container">
-    <h3 class="center">Visual Question Answering Demo</h3>
+    <h3 class="center">Visual Question Answering</h3>
 <!--   <div class="row">
         <img class="demo_img col s4" src="https://blogs.thegospelcoalition.org/kevindeyoung/files/2014/08/Cat_and_Dog-1024x899.jpg">
         <img class="demo_img col s4" src="https://blogs.thegospelcoalition.org/kevindeyoung/files/2014/08/Cat_and_Dog-1024x899.jpg">
@@ -63,12 +63,12 @@
       <div class="row" id="result" style="display:None;">
         <div class="row">
           <div class="col s4">
-            Input Image:<img src="" id="inputImage" class="demo_img">
+            <h5><b>Input Image</b></h5><img src="" id="inputImage" class="demo_img">
           </div>
-          <div class="col s8 center">
-            <h5 id="questionDisplay"><b>Question: </b> </h5>
-            <h5 id="outputAnswer"><b>Predicted Answer: </b></h5>
-            <h5 id="inputAnswer"><b>Generating Visualizations for: </b></h5>
+          <div class="col s8">
+            <h5><b>Question:</b><h5 id="questionDisplay"></h5></h5>
+            <h5><b>Predicted Answer:</b><h5 id="outputAnswer"></h5></h5>
+            <h5><b>Generating Visualizations for: </b><h5 id="inputAnswer"></h5>
           </div>
         </div>
           <div class="col s4">
@@ -108,9 +108,9 @@
             $("#img3").attr("src",response['vqa_gb_gcam']);
 
             $("#result").show();
-            $("#inputAnswer").append(response['input_asnwer']);
-            $("#outputAnswer").append(response['answer']);
-            $("#questionDisplay").text($("#question").val());
+            $("#inputAnswer").replaceWith(response['input_answer']);
+            $("#outputAnswer").replaceWith(response['answer']);
+            $("#questionDisplay").replaceWith($("#question").val());
           }
         });
     }
