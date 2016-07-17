@@ -1,6 +1,5 @@
 require 'torch'
 require 'nn'
-require 'lfs'
 require 'image'
 require 'loadcaffe'
 utils = require 'misc.utils'
@@ -9,16 +8,13 @@ local preprocess = utils.preprocess
 
 local TorchModel = torch.class('TorchModel')
 
-function TorchModel:__init(proto_file, model_file, input_sz, backend, layer_name, input_image_path, question, answer, model_path, input_encoding_size, rnn_size, rnn_layers, common_embedding_size, num_output, seed, gpuid, out_path )
+function TorchModel:__init(proto_file, model_file, input_sz, backend, layer_name, model_path, input_encoding_size, rnn_size, rnn_layers, common_embedding_size, num_output, seed, gpuid)
 
   self.proto_file = proto_file
   self.model_file = model_file
   self.input_sz = input_sz
   self.backend = backend
   self.layer_name = layer_name
-  self.input_image_path = input_image_path
-  self.question = question
-  self.answer = answer
   self.model_path = model_path
   self.input_encoding_size = input_encoding_size
   self.rnn_size = rnn_size
@@ -27,12 +23,10 @@ function TorchModel:__init(proto_file, model_file, input_sz, backend, layer_name
   self.num_output = num_output
   self.seed = seed
   self.gpuid = gpuid
-  self.out_path = out_path
   self:loadModel(proto_file, model_file, backend)
 
   torch.manualSeed(self.seed)
   torch.setdefaulttensortype('torch.FloatTensor')
-  lfs.mkdir(self.out_path)
 
   if self.gpuid >= 0 then
     require 'cunn'
@@ -135,7 +129,7 @@ function TorchModel:loadModel(proto_file, model_file, backend)
 
 end
 
-function TorchModel:predict(input_image_path, input_sz, input_sz)
+function TorchModel:predict(input_image_path, input_sz, input_sz, input_question, input_answer, out_path)
 
   -- Load image
   local img = utils.preprocess(input_image_path, input_sz, input_sz)
@@ -151,7 +145,7 @@ function TorchModel:predict(input_image_path, input_sz, input_sz)
   fv_im_gb = self.cnn_gb:forward(img)
 
   -- Tokenize question
-  local cmd = 'python misc/prepro_ques.py --question "'.. self.question..'"'
+  local cmd = 'python misc/prepro_ques.py --question "'.. input_question..'"'
   os.execute(cmd)
   local file = io.open('ques_feat.json')
   local text = file:read()
@@ -165,6 +159,7 @@ function TorchModel:predict(input_image_path, input_sz, input_sz)
   if self.gpuid >= 0 then
     fv_sorted_q[1] = fv_sorted_q[1]:cuda()
     fv_sorted_q[3] = fv_sorted_q[3]:cuda()
+
     fv_sorted_q[4] = fv_sorted_q[4]:cuda()
   end
 
@@ -185,11 +180,11 @@ function TorchModel:predict(input_image_path, input_sz, input_sz)
   answer = self.json_file['ix_to_ans'][tostring(pred[{1, 1}])]
 
   local inv_vocab = utils.table_invert(self.json_file['ix_to_ans'])
-  if self.answer ~= '' then answer_idx = inv_vocab[self.answer] else self.answer = answer answer_idx = inv_vocab[answer] end
+  if input_answer ~= '' then answer_idx = inv_vocab[input_answer] else input_answer = answer answer_idx = inv_vocab[answer] end
 
-  print("Question: ", self.question)
+  print("Question: ", input_question)
   print("Predicted answer: ", answer)
-  print("Grad-CAM answer: ", self.answer)
+  print("Grad-CAM answer: ", input_answer)
 
   -- Set gradInput
   local doutput = utils.create_grad_input(self.multimodal_net.modules[#self.multimodal_net.modules], answer_idx)
@@ -204,18 +199,20 @@ function TorchModel:predict(input_image_path, input_sz, input_sz)
 
   local result = {}
   local hm = utils.to_heatmap(gcam)
-  image.save(self.out_path .. 'vqa_gcam_' .. self.answer .. '.png', image.toDisplayTensor(hm))
-  result[0] = self.out_path .. 'vqa_gcam_' .. self.answer .. '.png'
+  image.save(out_path .. 'vqa_gcam_' .. input_answer .. '.png', image.toDisplayTensor(hm))
+  result['vqa_gcam'] = out_path .. 'vqa_gcam_' .. input_answer .. '.png'
 
   -- Guided Backprop
   local gb_viz = self.cnn_gb:backward(img, dcnn)
-  image.save(self.out_path .. 'vqa_gb_' .. self.answer .. '.png', image.toDisplayTensor(gb_viz))
-  result[1] = self.out_path .. 'vqa_gb_' .. self.answer .. '.png'
+  image.save(out_path .. 'vqa_gb_' .. input_answer .. '.png', image.toDisplayTensor(gb_viz))
+  result['vqa_gb'] = out_path .. 'vqa_gb_' .. input_answer .. '.png'
 
   -- Guided Grad-CAM
   local gb_gcam = gb_viz:float():cmul(gcam:expandAs(gb_viz))
-  image.save(self.out_path .. 'vqa_gb_gcam_' .. self.answer .. '.png', image.toDisplayTensor(gb_gcam))
-  result[2] = self.out_path .. 'vqa_gb_gcam_' .. self.answer .. '.png'
-
+  image.save(out_path .. 'vqa_gb_gcam_' .. input_answer .. '.png', image.toDisplayTensor(gb_gcam))
+  result['vqa_gb_gcam'] = out_path .. 'vqa_gb_gcam_' .. input_answer .. '.png'
+  result['input_answer'] = input_answer
+  result['answer'] = answer
+  result['input_image'] = input_image_path
   return result
 end

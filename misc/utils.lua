@@ -4,7 +4,6 @@ local utils = {}
 function utils.preprocess(path, width, height)
   local width = width or 224
   local height = height or 224
-
   -- load image
   local orig_image = image.load(path)
 

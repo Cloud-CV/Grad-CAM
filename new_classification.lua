@@ -9,14 +9,13 @@ local preprocess = utils.preprocess
 
 local TorchModel = torch.class('TorchModel')
 
-function TorchModel:__init(proto_file, model_file, backend, input_sz, layer_name, input_image_path, label, seed, gpuid, out_path)
+function TorchModel:__init(proto_file, model_file, backend, input_sz, layer_name, label, seed, gpuid, out_path)
 
   self.proto_file = proto_file
   self.model_file = model_file
   self.backend = backend
   self.input_sz = input_sz
   self.layer_name = layer_name
-  self.input_image_path = input_image_path
   self.label = label
   self.seed = seed
   self.gpuid = gpuid

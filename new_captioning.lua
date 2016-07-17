@@ -8,14 +8,12 @@ local preprocess = utils.preprocess
 
 local TorchModel = torch.class('TorchModel')
 
-function TorchModel:__init(model_path, backend, input_sz, layer, input_image_path, caption, seed, gpuid, out_path)
+function TorchModel:__init(model_path, backend, input_sz, layer, seed, gpuid, out_path)
 
   self.model_path = model_path
   self.backend = backend
   self.input_sz = input_sz
   self.layer = layer
-  self.input_image_path = input_image_path
-  self.caption = caption
   self.seed = seed
   self.gpuid = gpuid
   self.out_path = out_path
@@ -70,7 +68,7 @@ function TorchModel:loadModel(model_path)
 end
 
 
-function TorchModel:predict(input_image_path, input_sz, input_sz)
+function TorchModel:predict(input_image_path, input_sz, input_sz, input_caption)
 
   local img = utils.preprocess(input_image_path, input_sz, input_sz)
 
@@ -97,17 +95,17 @@ function TorchModel:predict(input_image_path, input_sz, input_sz)
 
   local caption = self.net_utils.decode_sequence(self.vocab, seq)
 
-  if self.caption == '' then
+  if input_caption == '' then
     print("No caption provided, using generated caption for Grad-CAM.")
-    self.caption = caption[1]
+    input_caption = caption[1]
   end
 
   print("Generated caption: ", caption[1])
-  print("Grad-CAM caption: ", self.caption)
+  print("Grad-CAM caption: ", input_caption)
 
   local seq_length = self.seq_length or 16
 
-  local labels = utils.sent_to_label(self.vocab, self.caption, seq_length)
+  local labels = utils.sent_to_label(self.vocab, input_caption, seq_length)
   if self.gpuid >=0 then labels = labels:cuda() end
 
   local logprobs = self.lm:forward({im_feat, labels})
@@ -125,18 +123,18 @@ function TorchModel:predict(input_image_path, input_sz, input_sz)
 
   local result = {}
   local hm = utils.to_heatmap(gcam)
-  image.save(self.out_path .. 'caption_gcam_'  .. self.caption .. '.png', image.toDisplayTensor(hm))
-  result[0] = self.out_path .. 'caption_gcam_'  .. self.caption .. '.png'
+  image.save(self.out_path .. 'caption_gcam_'  .. input_caption .. '.png', image.toDisplayTensor(hm))
+  result[0] = self.out_path .. 'caption_gcam_'  .. input_caption .. '.png'
 
   -- Guided Backprop
   local gb_viz = cnn_gb:backward(img, dcnn)
-  image.save(self.out_path .. 'caption_gb_' .. self.caption .. '.png', image.toDisplayTensor(gb_viz))
-  result[1] = self.out_path .. 'caption_gb_' .. self.caption .. '.png'
+  image.save(self.out_path .. 'caption_gb_' .. input_caption .. '.png', image.toDisplayTensor(gb_viz))
+  result[1] = self.out_path .. 'caption_gb_' .. input_caption .. '.png'
 
   -- Guided Grad-CAM
   local gb_gcam = gb_viz:float():cmul(gcam:expandAs(gb_viz))
-  image.save(self.out_path .. 'caption_gb_gcam_' .. self.caption .. '.png', image.toDisplayTensor(gb_gcam))
-  result[2] = self.out_path .. 'caption_gb_gcam_' .. self.caption .. '.png'
+  image.save(self.out_path .. 'caption_gb_gcam_' .. input_caption .. '.png', image.toDisplayTensor(gb_gcam))
+  result[2] = self.out_path .. 'caption_gb_gcam_' .. input_caption .. '.png'
   return result
 
 end
