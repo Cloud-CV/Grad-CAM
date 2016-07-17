@@ -1,0 +1,134 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Grad-Cam</title>
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+</head>
+<body>
+  <nav>
+    <div class="nav-wrapper red darken-4">
+      <a href="#" class="brand-logo center">Gradient-weighted Class Activation Mapping Demo</a>
+    </div>
+  </nav>
+  <div class="container">
+    <h3 class="center">Visual Question Answering Demo</h3>
+<!--   <div class="row">
+        <img class="demo_img col s4" src="https://blogs.thegospelcoalition.org/kevindeyoung/files/2014/08/Cat_and_Dog-1024x899.jpg">
+        <img class="demo_img col s4" src="https://blogs.thegospelcoalition.org/kevindeyoung/files/2014/08/Cat_and_Dog-1024x899.jpg">
+        <img class="demo_img col s4" src="https://blogs.thegospelcoalition.org/kevindeyoung/files/2014/08/Cat_and_Dog-1024x899.jpg">
+      </div>
+      <div class="row">
+        <img class="demo_img col s4" src="https://blogs.thegospelcoalition.org/kevindeyoung/files/2014/08/Cat_and_Dog-1024x899.jpg">
+        <img class="demo_img col s4" src="https://blogs.thegospelcoalition.org/kevindeyoung/files/2014/08/Cat_and_Dog-1024x899.jpg">
+        <img class="demo_img col s4" src="https://blogs.thegospelcoalition.org/kevindeyoung/files/2014/08/Cat_and_Dog-1024x899.jpg">
+    </div> -->
+
+    <div class="row">
+      <form class="col s12" action="/demo/vqa/" method="POST" enctype="multipart/form-data" id="vqaForm">
+        {% csrf_token %}
+        <div class="file-field input-field col s10">
+          <div class="btn red darken-4">
+            <span>Image</span>
+            <input type="file" name="file" id="file">
+          </div>
+          <div class="file-path-wrapper">
+            <input class="file-path validate" type="text" placeholder="Upload Image" name="file">
+          </div>
+        </div>
+        <div class="input_field col s6">
+          <label for="question">Question</label>
+          <input id="question" type="text" class="validate" name="question" id="question">
+        </div>
+        <div class="input_field col s4">
+          <label for="answer">Answer(Optional)</label>
+          <input id="answer" type="text" name="answer" id="answer">
+        </div>
+        <div class="col s4">
+          <a class="waves-effect waves-light btn red darken-4" onclick="submitForm();"><i class="material-icons right">cloud</i>Submit</a>
+        </div>
+        </form>
+    </div>
+  </div>
+  <div class="container">
+    <h4 id="resultHeading" class="center">Result of Visual Question Answering</h4>
+      <div class="row" id="result" style="display:None;">
+        <div class="row">
+          <div class="col s4">
+            Input Image:<img src="" id="inputImage" class="demo_img">
+          </div>
+          <div class="col s8 center">
+            <h5 id="questionDisplay"><b>Question: </b> </h5>
+            <h5 id="outputAnswer"><b>Predicted Answer: </b></h5>
+            <h5 id="inputAnswer"><b>Generating Visualizations for: </b></h5>
+          </div>
+        </div>
+          <div class="col s4">
+            <img class="demo_img" src="" id="img1">
+            <p class="center">Grad-CAM</p>
+          </div>
+          <div class="col s4">
+            <img class="demo_img" src="" id="img2">
+            <p class="center">Guided Backprop</p>
+          </div>
+          <div class="col s4">
+            <img class="demo_img" src="" id="img3">
+            <p class="center">Guided Grad-CAM</p>
+          </div>
+      </div>
+  </div>
+</body>
+
+<script type='text/javascript'>
+    /* attach a submit handler to the form */
+      function submitForm(){
+      var form = $('#vqaForm');
+      var formData = new FormData($('form')[0]);
+      formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        $.ajax( {
+          type: "POST",
+          url: form.attr( 'action' ),
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function( response ) {
+            console.log(response);
+            scrollToElement($('#resultHeading'));
+            $("#inputImage").attr("src",response['input_image']);
+            $("#img1").attr("src",response['vqa_gcam']);
+            $("#img2").attr("src",response['vqa_gb']);
+            $("#img3").attr("src",response['vqa_gb_gcam']);
+
+            $("#result").show();
+            $("#inputAnswer").append(response['input_asnwer']);
+            $("#outputAnswer").append(response['answer']);
+            $("#questionDisplay").text($("#question").val());
+          }
+        });
+    }
+
+    function scrollToElement(dstElement) {
+      try
+      {
+        var scrollPixels = dstElement.offset().top - $(".navbar-fixed-top").height()-30;
+        $('html, body').animate({
+        scrollTop: scrollPixels
+        }, 2000);
+      }
+      catch(err)
+      {
+          console.log(err);
+      }
+    }
+
+</script>
+
+</html>
