@@ -1,6 +1,8 @@
 from django.conf import settings
 import os
 
+GRAD_CAM_DEMO_IMAGES_PATH = os.path.join(settings.BASE_DIR, 'media', 'grad_cam', 'demo')
+
 VQA_CONFIG = {
 	'proto_file': 'models/VGG_ILSVRC_19_layers_deploy.prototxt',
 	'model_file': 'models/VGG_ILSVRC_19_layers.caffemodel',
@@ -18,3 +20,21 @@ VQA_CONFIG = {
 }
 
 VQA_LUA_PATH = "new_vqa.lua"
+
+
+CLASSIFICATION_CONFIG = {
+	'proto_file': 'models/VGG_ILSVRC_16_layers_deploy.prototxt',
+	'model_file': 'models/VGG_ILSVRC_16_layers.caffemodel',
+	'input_sz': 224,
+	'backend': 'nn',
+	'layer_name': 'relu5_3',
+	'image_dir': os.path.join(settings.BASE_DIR, 'media', 'grad_cam', 'classification')
+}
+
+CLASSIFICATION_LUA_PATH = "new_classification.lua"
+
+CAPTIONING_CONFIG = {
+	
+}
+
+CAPTIONING_LUA_PATH = "new_captioning.lua"

@@ -23,3 +23,15 @@ VqaTorchModel = VQAModel(
     constants.VQA_CONFIG['seed'],
     settings.GPUID,
 )
+
+
+ClassificationModel = PyTorchHelpers.load_lua_class(constants.CLASSIFICATION_LUA_PATH, 'TorchModel')
+ClassificationTorchModel = ClassificationModel(
+    constants.CLASSIFICATION_CONFIG['proto_file'],
+    constants.CLASSIFICATION_CONFIG['model_file'],
+    constants.CLASSIFICATION_CONFIG['input_sz'],
+    constants.CLASSIFICATION_CONFIG['backend'],
+    constants.CLASSIFICATION_CONFIG['layer_name'],
+    constants.CLASSIFICATION_CONFIG['seed'],
+    settings.GPUID,
+)

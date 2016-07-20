@@ -1,0 +1,360 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CloudCV: Large Scale Distributed Computer Vision as a cloud service</title>
+    <meta name="description" content="CloudCV: Large Scale Distributed Computer Vision as a Cloud Service">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://cloudcv.org/static/css/style.css">
+    <script src="http://cloudcv.org/static/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <script src="/static/js/dropzone.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.3.0/min/dropzone.min.css">
+</head>
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-fixed-top .navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">CloudCV</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li id="image-stitching"><a  href="http://cloudcv.org/image-stitch">Image Stitching</a></li>
+                 <li id = "object-detection" ><a href="http://objdetect.cloudcv.org">Object Detection</a></li>
+                <li id = "decaf-server"><a  href="http://cloudcv.org/decaf-server">Decaf-Server</a></li>
+                <li id = "classification" ><a href="http://cloudcv.org/classify">Classification</a></li>
+                <li id = "poi" ><a href="http://cloudcv.org/vip">VIP</a></li>
+                <li id="trainaclass"><a href="http://cloudcv.org/trainaclass">Train a new category</a></li>
+                <li id="vqa"><a href="http://cloudcv.org/vqa">VQA</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<style>
+  .hiddenDiv{
+      display: none;
+  }
+  .button_link {
+  cursor: pointer;
+  }
+  .demo_img{
+  height: 300px !important;
+      padding: 6px;
+
+  }
+  .demo_img:hover {
+  border: 6px solid black;
+      padding: 0px;
+  cursor: pointer;
+  }
+  #show-demo-images-btn{
+      text-align: right;
+  }
+  @media(max-width: 540px){
+      #show-demo-images-btn{
+        text-align: center;
+
+      }
+  }
+
+.dz-upload { 
+    display: block; 
+    background-color: red; 
+    height: 10px;
+    width: 0%;
+}
+
+</style>
+
+<div id="socket-error" class="modal hide fade" tabindex="-1" data-width="760">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3>Socket Error</h3>
+  </div>
+  <div class="modal-body">
+    <div class="row-fluid">
+      Socket connection cannot be established on port 8000 which is required to communicate with the CloudCV Servers. Please make sure that port 8000 is open and not blocked by firewall on your system.<br>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn">Close</button>
+  </div>
+</div>
+
+{% block header_content %}
+
+  <div class="container">
+      <div class="page-header">
+        <h1 align="center">CloudCV Sample Demo Heading </h1>
+        <h3 align="center">More details about the VQA dataset can be found <a href="http://visualqa.org/">here.</a></h3>
+        <h3 align="center">State-of-the-art VQA model and code available <a href="https://github.com/VT-vision-lab/VQA_LSTM_CNN">here</a></h3>
+        <br>
+        <font size="4">
+          <p style="text-align:center;"><font size="4">CloudCV can answer questions you ask about an image</font><br><br>
+              <span style="font-size: 14px;">Browsers currently supported: Google Chrome, Mozilla Firefox</span>
+          </p>
+        </font>
+      <br><br>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block demo_images %}
+
+<div class="container">
+    <div class="page-header">
+        <h2>Try CloudCV Grad-CAM: Sample Images</h2>
+        <br>
+        <div class="row">
+            <div class="col-md-8 col-xs-12">
+                <font size="4">Click on one of these images to send it to our servers (Or <a class="button_link" onclick="scrollToElement($('#userImages'))">upload</a>
+                    your own images below)</font>
+            </div>
+            <div id="show-demo-images-btn" class="col-md-4">
+            <button  class="btn btn-info">Show Demo Images</button>
+            </div>
+        </div>
+         <div class="row hiddenDiv demoImages" id="demoImages1">
+            <img src=""
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src=""
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src=""
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+         </div>
+         <div class="row hiddenDiv demoImages" id="demoImages2">
+            <img src=""
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src=""
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src=""
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <br>
+         </div>
+        <div class="row randomImages" id="demoImages3">
+            <img src="{{ demo_images.0 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="{{ demo_images.1 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="{{ demo_images.2 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+        </div>
+        <div class="row randomImages" id="demoImages4">
+            <img src="{{ demo_images.3 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="{{ demo_images.4 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="{{ demo_images.5 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+             <br>
+        </div>
+        Note: nothing is pre-computed for these images. They are treated as a fresh upload with every click.
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block form %}
+{% endblock %}
+
+{% block terminal %}
+
+<div class="container">
+        <h3 id="termstart">Terminal: </h3>
+
+        <div id="Console"
+             style="height:300px; color: #FFFFFF; background-color: #2B2A2B; overflow:scroll; padding: 10px;">
+            <ul id="comments" style='list-style-type:none;'>
+            </ul>
+        </div>
+        <br>
+
+        <div id="underTheHood">
+            <p><h3>How it works</h3></p>
+          <font size="4">
+                <ol>
+                    <li>You upload an image.</li>
+                    <li>Your request is sent to our servers with GPUs courtesy NVIDIA.</li>
+                    <li>Our servers run our deep-learning based <a class="button_link" onclick="scrollToElement($('#creditSection'))"> algorithm.</a></li>
+                    <li>Results and updates are shown in real-time.</li>    
+                </ol>
+            </font><br><br>
+        </div>
+
+{% endblock %}
+
+{% block result %}
+
+{% endblock%}
+
+{% block credits %}
+
+  <div id="creditSection">
+    <h3> Credits </h3>
+    <font size="4">
+      <a href="#">Sample Credit Link Section</a><br>
+        Deshraj Yadav, Harsh Agarwal, Dhruv Batra
+      <br><br>
+    </font>
+    <br>
+  </div>
+{% endblock %}
+
+  </div>
+</div>
+
+
+<script>
+    var socketid;
+    var demo_running=0;
+
+</script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://cloudcv.org/static/js/vendor/jquery.ui.widget.js"></script>
+<script src="http://cloudcv.org/node/socket.io/socket.io.js"></script>
+<script>
+    var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+    var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isEdge = !isIE && !!window.StyleMedia;
+    var isChrome = !!window.chrome && !!window.chrome.webstore;
+    var isBlink = (isChrome || isOpera) && !!window.CSS;
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+
+  $(document).ready(function(){
+    var host = location.origin;
+  //   var socket = io.connect(host,{transports: ["websocket"]});
+
+  //   socket.on('connect', function(){
+  //       console.log("connect");
+  //   });
+
+  //   $('.demo_img').each(function(){
+  //       var width = $(this).width();
+  //       console.log(width);
+  //       $(this).css("height", width * 0.7);
+  //   });
+
+  //   $(window).on('resize', function(){
+  //   $('.demo_img').each(function(){
+  //       var width = $(this).width();
+  //       console.log(width);
+  //       $(this).css("height", width * 0.7);
+  //   });
+  // });
+
+  // socket.on('message', function(message)
+  // {
+  //     if(message.socketid)
+  //     {
+  //         console.log("socketid recieved: " + message.socketid);
+  //         document.getElementById('socketid').value= message.socketid.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  //         socketid = document.getElementById('socketid').value
+  //     }
+  //     if(message.visit)
+  //     {
+  //         $('#statcounter').append('<p>' + message.visit );
+  //         console.log(message.visit);
+  //     }
+  //     if(message.name)
+  //     {
+  //         console.log(message.name);
+  //         $('#comments').prepend('<li>' + message.name + '</li>');
+  //     }
+  //     if(message.web_result)
+  //     {
+  //         webResult = JSON.parse(message.web_result);
+  //         console.log(webResult);
+  //         processResult(webResult);
+  //     }
+  // });
+});
+
+</script>
+
+<script>
+  function scrollToElement(dstElement) {
+    try
+    {
+      var scrollPixels = dstElement.offset().top - $(".navbar-fixed-top").height()-30;
+      $('html, body').animate({
+      scrollTop: scrollPixels
+      }, 2000);
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
+  }
+
+  function submitForm(src, id){
+      //Change the image to loading jpeg
+      console.log("Submitted question.");
+      $('#comments').prepend('<li>' + "Asking the question..." + '</li>');
+      console.log(src);
+
+      var txtArea = document.getElementById("txt"+id);
+
+      $.ajax({
+        type    : 'POST', // define the type of HTTP verb we want to use (POST for our form)
+        url     : '{% url 'upload' %}', // the url where we want to POST
+        data    : {'src':src, } // our data object
+      })
+    .done(function(data) {
+      data = JSON.parse(data);
+      console.log(data);
+    });
+  }
+
+</script>
+
+<script>
+
+  $(document).ready(function() {
+    $("#show-demo-images-btn button").click(function() {
+        if($(this).text() == "Show Demo Images") {
+            $(this).text("Show Random Images");
+            $('#demoImages3').hide();
+            $('#demoImages4').hide();
+            $('#demoImages1').show();
+            $('#demoImages2').show();
+        } else if($(this).text() == "Show Random Images") {
+            $(this).text("Show Demo Images");
+            $('#demoImages1').hide();
+            $('#demoImages2').hide();
+            $('#demoImages3').show();
+            $('#demoImages4').show();
+        } else {
+            alert("An error occured. We will fix it soon.");
+        }
+    });
+  });
+
+</script>
+
+</body>
+</html>

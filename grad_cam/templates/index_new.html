@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block header_content %}
+
+{% include 'header_content.html' %}
+
+{% endblock %}
+
+{% block form %}
+
+<div class="container">
+  <div class="page-header">
+    <h2 id="userImages">Try CloudCV VQA On Your Images</h2>
+  </div>
+
+  <form id="fileupload" method="post" class="dropzone
+  " action="{% url "upload" %}" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  {% include 'form.html' %}
+  </form>
+
+{% endblock %}
+
+{% block terminal %}
+{% endblock %}
+
+{% block result %}
+
+{% include 'result.html' %}
+
+{% endblock %}
+
+</body>
+<script type="text/javascript">
+  // handle things after the file is uploaded on the server
+  // 1. Navigate below to show the image thumbnail and a quesiton and answer field 
+  var image_count = 0;
+  function processResult(response_data){
+        image_count = image_count + 1;
+
+        $('#comments').prepend('<li>' + "Rendering results..." + '</li>');
+        var parentDiv = document.getElementById("ResultImage");
+        var imageDiv = document.createElement("div");
+        var tableDiv = document.createElement("div");
+
+        imageDiv.className = "col-md-5";
+        imageDiv.style.paddingBottom="30px";
+
+        imageDiv.style.clear="both";
+
+        tableDiv.className="col-md-7";
+        tableDiv.style.paddingBottom="30px";
+
+        var newImage = document.createElement("img");
+        newImage.style.height = "300px";
+      newImage.className = "img-responsive";
+
+        var newImageURL = response_data['uploaded_image_path'];
+        var imID = "imDiv"+image_count;
+
+        newImage.src = newImageURL;
+        imageDiv.appendChild(newImage);
+        parentDiv.appendChild(imageDiv);
+
+        // Add question textbox and submit button here
+        createButton(tableDiv, newImageURL, imID);
+
+        var ansDiv = document.createElement("div");
+        $(ansDiv).attr("id",imID);
+        tableDiv.appendChild(ansDiv);
+        parentDiv.appendChild(tableDiv);
+        scrollToElement($(imageDiv));
+
+    }
+
+    function createButton(context, imgsrc, imageid){
+        // generate question element 
+        var questionArea = document.createElement("questionArea");
+        $(questionArea).attr("rows","1");
+        $(questionArea).attr("id","question"+imageid);
+        // $(questionArea).attr("btid","bt"+imageid);
+        $(questionArea).addClass("form-control")
+
+        // Generate answer area 
+        var answerArea = document.createElement("input");
+        $(answerArea).attr("id","answer"+imageid);
+        // $(answerArea).attr("btid","bt"+imageid);
+        $(answerArea).addClass("form-control")
+        var button = document.createElement("input");
+        button.type = "button";
+        button.value = "Submit";
+        $(button).attr("onclick","submitQuestion('"+imgsrc+"','"+imageid+"')");
+        $(button).attr("id","bt"+imageid);
+        $(button).addClass("btn");
+        $(button).addClass("btn-primary");
+
+        
+        context.appendChild(questionArea);
+        context.appendChild(answerArea);
+      
+        context.appendChild(document.createElement("br"));
+      }
+</script>
+
+</html>

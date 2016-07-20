@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block header_content %}
+
+{% include 'header_content.html' %}
+
+{% endblock %}
+
+{% block form %}
+
+<div class="container">
+  <div class="page-header">
+    <h2 id="userImages">Try CloudCV VQA On Your Images</h2>
+  </div>
+
+  <form id="fileupload" method="post" class="dropzone
+  " action="{% url "classification_upload" %}" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  {% include 'form.html' %}
+  </form>
+
+{% endblock %}
+
+{% block terminal %}
+{% endblock %}
+
+{% block result %}
+
+<script type="text/javascript">
+  var getLocation = function(href) {
+      var l = document.createElement("a");
+      l.href = href;
+      return l;
+  };
+
+function submitDemoImage(src){
+  var img_path = getLocation(src).pathname;
+  $("#inputImageAfterUpload").attr('src', img_path);
+  $("#ResultDiv").show();
+  scrollToElement($("#resultHeading"));
+}
+
+function submitImageForClassification () {
+  var label = $("#label").val();
+  var l = $("#inputImageAfterUpload")[0].src;
+  var img_path = getLocation(l).pathname;
+
+  $.ajax({
+    type    : 'POST', // define the type of HTTP verb we want to use (POST for our form)
+    url     : '{% url 'classification' %}', // the url where we want to POST
+    data    : { 'img_path': img_path, 'csrfmiddlewaretoken': {{ csrf_token }}, 'label': label} // our data object
+  })// using the done promise callback
+  .done(function(data) {
+    $("#img1").attr("src",response['vqa_gcam']);
+    $("#img2").attr("src",response['vqa_gb']);
+    $("#img3").attr("src",response['vqa_gb_gcam']);
+    $("#show-grad-cam-result").show();
+  });
+}
+</script>
+<br>
+<h3 id="resultHeading" class="center">Result of Grad-CAM Visual Question Answering</h3>
+
+<div id="ResultDiv" class="row" style="padding-bottom:100px; display:None;">
+  <div class="col-md-5" style="padding-bottom: 30px; clear: both;">
+    <img class="img-responsive" src="" style="height: 300px;" id="inputImageAfterUpload">
+  </div>
+  <div class="col-md-7" style="padding-bottom: 30px;">
+  <textarea rows="1" id="label" class="form-control" name="label" placeholder="Start typing Label ..."></textarea><br>
+    <input type="button" value="Submit" onclick="submitImageForClassification()" class="btn btn-primary">
+    <div id="show-grad-cam-result" style="display:None;">
+      <div class="row hiddenDiv demoImages" id="demoImages1">
+        <img src="" class="demo_img col-md-4" id="img1">
+          <p class="center">Grad-CAM</p>
+        </img>
+        <img src="" class="demo_img col-md-4" id="img1">
+          <p class="center">Guided Backprop</p>
+        </img>
+        <img src="" class="demo_img col-md-4" id="img1">
+          <p class="center">Guided Grad-CAM</p>
+        </img>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+</body>
+
+</html>

@@ -38,7 +38,7 @@
         <div class="file-field input-field col s10">
           <div class="btn red darken-4">
             <span>Image</span>
-            <input type="file" name="file" id="file">
+            <input type="file" name="file" id="file" required>
           </div>
           <div class="file-path-wrapper">
             <input class="file-path validate" type="text" placeholder="Upload Image" name="file">
@@ -46,7 +46,7 @@
         </div>
         <div class="input_field col s6">
           <label for="question">Question</label>
-          <input id="question" type="text" class="validate" name="question" id="question">
+          <input id="question" type="text" class="validate" name="question" id="question" required>
         </div>
         <div class="input_field col s4">
           <label for="answer">Answer(Optional)</label>
@@ -66,9 +66,9 @@
             <h5><b>Input Image</b></h5><img src="" id="inputImage" class="demo_img">
           </div>
           <div class="col s8">
-            <h5><b>Question:</b><h5 id="questionDisplay"></h5></h5>
-            <h5><b>Predicted Answer:</b><h5 id="outputAnswer"></h5></h5>
-            <h5><b>Generating Visualizations for: </b><h5 id="inputAnswer"></h5>
+            <h5><b>Question:</b></h5><h5 id="questionDisplay"></h5>
+            <h5><b>Predicted Answer:</b></h5><h5 id="outputAnswer"></h5>
+            <h5><b>Generating Visualizations for: </b></h5><h5 id="inputAnswer"></h5>
           </div>
         </div>
           <div class="col s4">
@@ -107,10 +107,10 @@
             $("#img2").attr("src",response['vqa_gb']);
             $("#img3").attr("src",response['vqa_gb_gcam']);
 
+            $("#inputAnswer").text(response['input_answer']);
+            $("#outputAnswer").text(response['answer']);
+            $("#questionDisplay").text($("#question").val());
             $("#result").show();
-            $("#inputAnswer").replaceWith(response['input_answer']);
-            $("#outputAnswer").replaceWith(response['answer']);
-            $("#questionDisplay").replaceWith($("#question").val());
           }
         });
     }
