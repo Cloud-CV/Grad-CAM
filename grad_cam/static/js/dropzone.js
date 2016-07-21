@@ -383,6 +383,11 @@
         console.log(data);
         $("#inputImageAfterUpload").attr('src', data['file_path']);
         $("#ResultDiv").show();
+        $("#show-grad-cam-result").hide();
+        $("#demoType").val("uploadedImageType");
+        $("#question").val("");
+        $("#answer").val("");
+
         scrollToElement($("#resultHeading"));
 
         if (file.previewElement) {

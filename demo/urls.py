@@ -9,7 +9,6 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     url(r'^demo/', include('grad_cam.urls')),
-
     # url(r'^admin/', include(admin.site.urls)),
 )
 

@@ -124,19 +124,19 @@
             </div>
         </div>
          <div class="row hiddenDiv demoImages" id="demoImages1">
-            <img src=""
+            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000003501.jpg "
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src=""
+            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000033270.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src=""
+            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000237618.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
          </div>
          <div class="row hiddenDiv demoImages" id="demoImages2">
-            <img src=""
+            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000184402.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src=""
+            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000393056.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src=""
+            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000240731.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
             <br>
          </div>
@@ -353,6 +353,25 @@
         }
     });
   });
+
+</script>
+
+<script type="text/javascript">
+    $("#question").keypress(function(event) {
+        if (event.which == 13) {
+          if ($("#question").val().length){
+            console.log("shift focus to answer");
+            $("#answer").focus();
+          }
+        }
+    });
+
+        $("#answer").keypress(function(event) {
+        if (event.which == 13) {
+            submitImageForVqa();
+            console.log("submited the form");
+        }
+    });
 
 </script>
 

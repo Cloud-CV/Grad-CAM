@@ -90,6 +90,7 @@
 <script type='text/javascript'>
     /* attach a submit handler to the form */
       function submitForm(){
+      $("#result").hide();
       var form = $('#vqaForm');
       var formData = new FormData($('form')[0]);
       formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');

@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block header_content %}
+
+<div class="container">
+    <div class="page-header">
+        <h1 align="center">Grad-CAM</h1>
+        <h2 align="center">Gradient-weighted Class Activation Mapping</h2>
+        <h3 align="center">Code for Grad-CAM can be found <a href="https://github.com/ramprasaath21/grad-cam">here.</a></h3>
+        <font size="4">
+            <p style="text-align:center;"><font size="4">Grad-CAM can generate heatmaps for questions you ask about an image</font><br><br>
+                <span style="font-size: 14px;">Browsers currently supported: Google Chrome, Mozilla Firefox</span>
+            </p>
+        </font>
+        <br><br>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block form %}
+<style type="text/css">
+
+  .caption {
+    /*display: block;*/
+    /*text-align: center;*/
+    font-size: 18px !important;
+    font-weight: bold;
+}
+
+#inputAnswer, #predictedAnswer{
+    font-weight: bold;
+}
+
+.under
+{
+position:absolute;
+/*left:0px;
+top:0px;*/
+z-index:-1;
+}
+
+.over
+{
+position:absolute;
+/*left:40px;*/
+/*top:10px;*/
+z-index:0;
+opacity: 0.3;
+}
+
+#gradCamCaption{
+  position: relative;
+  padding-top: 300px;
+}
+
+.finalImages{
+  width: 300px !important;
+  height: 300px !important;
+  padding: 6px;
+}
+
+</style>
+
+<div class="container">
+  <div class="page-header">
+    <h2 id="userImages">Try Grad-CAM on your images</h2>
+  </div>
+
+  <form id="fileupload" method="post" class="dropzone
+  " action="{% url "vqa_upload" %}" enctype="multipart/form-data">
+  <input type="hidden" id="demoType" name="demo_type" value=""> 
+  {% csrf_token %}
+
+  {% include 'form.html' %}
+  </form>
+
+{% endblock %}
+
+{% block terminal %}
+{% endblock %}
+
+{% block result %}
+
+<script type="text/javascript">
+
+  var getLocation = function(href) {
+      var l = document.createElement("a");
+      l.href = href;
+      return l;
+  };
+
+function submitDemoImage(src){
+  $("#demoType").val("demoImageType");
+  $("#show-grad-cam-result").hide();
+  $("#question").val("");
+  $("#answer").val("");
+  var img_path = getLocation(src).pathname;
+  $("#inputImageAfterUpload").attr('src', img_path);
+  $("#ResultDiv").show();
+  scrollToElement($("#resultHeading"));
+}
+
+function submitImageForVqa () {
+  $("#show-grad-cam-result").hide();
+  var question = $("#question").val();
+  var answer = $("#answer").val();
+  var demo_type = $("#demoType").val();
+  var l = $("#inputImageAfterUpload")[0].src;
+  var img_path = getLocation(l).pathname;
+
+  $.ajax({
+    type    : 'POST', // define the type of HTTP verb we want to use (POST for our form)
+    url     : '{% url 'vqa_new' %}', // the url where we want to POST
+    data    : { 'img_path': img_path, 'csrfmiddlewaretoken': '{{ csrf_token }}', 'question': question, 'answer': answer, 'demo_type': demo_type} // our data object
+  })// using the done promise callback
+  .done(function(response) {
+    console.log(response);
+    $("#overImg1").attr("src", response['input_image']);
+    $("#img1").attr("src",response['vqa_gcam']);
+    $("#img2").attr("src",response['vqa_gb']);
+    $("#img3").attr("src",response['vqa_gb_gcam']);
+    $("#predictedAnswer").text(response['answer']);
+    $("#inputAnswer").text(response['input_answer']);
+    $("#show-grad-cam-result").show();
+    scrollToElement($("#show-grad-cam-result"));
+
+  });
+}
+
+
+</script>
+<br>
+  <div class="page-header">
+    <h2 id="resultHeading" class="center">Result of Grad-CAM for Visual Question Answering</h2>
+  </div>
+  <br>
+<div id="ResultDiv" class="row" style="display:None;">
+  <div class="col-md-5" style="padding-bottom: 30px; clear: both;">
+    <img class="img-responsive" src="" style="height: 300px;" id="inputImageAfterUpload">
+  </div>
+  <div class="col-md-7" style="padding-bottom: 30px;">
+  <input id="question" class="form-control" name="question" placeholder="Enter the question" required><br>
+  <input id="answer" class="form-control" name="answer" placeholder="Answer(Optional)"><br>
+    <input type="button" value="Submit" onclick="submitImageForVqa()" class="btn btn-primary">
+  </div>
+</div>
+  <div class="row demoImages" style="display:None;" id="show-grad-cam-result" >
+  <h3 style="display: inline;" align="center">Predicted Answer : &nbsp;</h3>
+  <h3 id="predictedAnswer" style="display: inline;" class="center"></h3>
+  <br>
+  <h3 style="display: inline;" class="center">Generating Grad-CAM visualizations for: &nbsp;</h3>
+  <h3 id="inputAnswer" style="display: inline;" align="center"></h3>
+
+  <div class="row">
+    
+    <div class="col-md-4">
+      <img src="" class="col-md-12 finalImages" id="img2">
+        <p class="caption" style="font-size: 14 px;" align="left">Guided Backprop</p>
+      </img>
+    </div>
+    <div class="col-md-4">
+      <img src="" class="over col-md-12 finalImages" id="overImg1" />
+      <img src="" class="under col-md-12 finalImages" id="img1">
+      <p class="caption" style="font-size: 14 px;" align="left" id="gradCamCaption">Grad-CAM</p>
+      </img>
+    </div>
+    <div class="col-md-4">
+      <img src="" class="col-md-12 finalImages" id="img3">
+        <p class="caption" style="font-size: 14 px; padding-left: 5px;" align="left">Guided Grad-CAM</p>
+      </img>
+    </div>
+  </div>
+  </div>
+{% endblock %}
+
+{% block credits %}
+<h3> Credits </h3>
+<font size="4">
+  <a href="https://github.com/VT-vision-lab/VQA_LSTM_CNN">Code for VQA Model</a><br>
+  <br><br>
+</font>
+<br>
+  </div>
+
+{% endblock %}
+</body>
+
+
+</html>
