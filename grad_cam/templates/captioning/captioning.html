@@ -14,7 +14,10 @@
   </div>
 
   <form id="fileupload" method="post" class="dropzone
-  " action="{% url "captioning_upload" %}" enctype="multipart/form-data">
+  " action="{% url "upload" %}" enctype="multipart/form-data">
+  <input type="hidden" id="demoType" name="demo_type" value=""> 
+  <input type="hidden" id="appType" name="type" value="captioning">
+
   {% csrf_token %}
 
   {% include 'form.html' %}

@@ -24,26 +24,26 @@ VQA_CONFIG = {
 VQA_LUA_PATH = "new_vqa.lua"
 
 
-# CLASSIFICATION_CONFIG = {
-#     'proto_file': 'models/VGG_ILSVRC_16_layers_deploy.prototxt',
-#     'model_file': 'models/VGG_ILSVRC_16_layers.caffemodel',
-#     'input_sz': 224,
-#     'backend': 'cudnn',
-#     'layer_name': 'relu5_3',
-#     'seed': 123,
-#     'image_dir': os.path.join(settings.BASE_DIR, 'media', 'grad_cam', 'classification')
-# }
+CLASSIFICATION_CONFIG = {
+    'proto_file': 'models/VGG_ILSVRC_16_layers_deploy.prototxt',
+    'model_file': 'models/VGG_ILSVRC_16_layers.caffemodel',
+    'input_sz': 224,
+    'backend': 'cudnn',
+    'layer_name': 'relu5_3',
+    'seed': 123,
+    'image_dir': os.path.join(settings.BASE_DIR, 'media', 'grad_cam', 'classification')
+}
 
-# CLASSIFICATION_LUA_PATH = "new_classification.lua"
+CLASSIFICATION_LUA_PATH = "new_classification.lua"
 
 
-# CAPTIONING_CONFIG = {
-#     'input_sz': 224,
-#     'backend': 'cudnn',
-#     'layer': 30,
-#     'model_path': 'neuraltalk2/model_id1-501-1448236541.t7',
-#     'seed': 123,
-#     'image_dir': os.path.join(settings.BASE_DIR, 'media', 'grad_cam', 'captioning')
-# }
+CAPTIONING_CONFIG = {
+    'input_sz': 224,
+    'backend': 'cudnn',
+    'layer': 30,
+    'model_path': 'neuraltalk2/model_id1-501-1448236541.t7',
+    'seed': 123,
+    'image_dir': os.path.join(settings.BASE_DIR, 'media', 'grad_cam', 'captioning')
+}
 
-# CAPTIONING_LUA_PATH = "new_captioning.lua"
+CAPTIONING_LUA_PATH = "new_captioning.lua"

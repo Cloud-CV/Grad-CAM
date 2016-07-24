@@ -6,14 +6,11 @@ utils = require 'misc.utils'
 
 local preprocess = utils.preprocess
 
-local TorchModel = torch.class('TorchModel')
+local TorchModel = torch.class('VQATorchModel')
 
 function TorchModel:__init(proto_file, model_file, input_sz, backend, layer_name, model_path, input_encoding_size, rnn_size, rnn_layers, common_embedding_size, num_output, seed, gpuid)
 
-  self.proto_file = proto_file
-  self.model_file = model_file
   self.input_sz = input_sz
-  self.backend = backend
   self.layer_name = layer_name
   self.model_path = model_path
   self.input_encoding_size = input_encoding_size
@@ -201,8 +198,13 @@ function TorchModel:predict(input_image_path, input_sz, input_sz, input_question
   image.save(out_path .. 'vqa_gcam_' .. input_answer .. '.png', image.toDisplayTensor(hm))
   result['vqa_gcam'] = out_path .. 'vqa_gcam_' .. input_answer .. '.png'
 
+
   -- Guided Backprop
   local gb_viz = self.cnn_gb:backward(img, dcnn)
+
+  -- BGR to RGB
+  gb_viz = gb_viz:index(1, torch.LongTensor{3, 2, 1})
+
   image.save(out_path .. 'vqa_gb_' .. input_answer .. '.png', image.toDisplayTensor(gb_viz))
   result['vqa_gb'] = out_path .. 'vqa_gb_' .. input_answer .. '.png'
 

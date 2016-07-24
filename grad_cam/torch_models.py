@@ -7,16 +7,16 @@ import PyTorchHelpers
 
 
 # Loading the classification model forever
-# ClassificationModel = PyTorchHelpers.load_lua_class(constants.CLASSIFICATION_LUA_PATH, 'ClassificationTorchModel')
-# ClassificationTorchModel = ClassificationModel(
-#     constants.CLASSIFICATION_CONFIG['proto_file'],
-#     constants.CLASSIFICATION_CONFIG['model_file'],
-#     constants.CLASSIFICATION_CONFIG['backend'],
-#     constants.CLASSIFICATION_CONFIG['input_sz'],
-#     constants.CLASSIFICATION_CONFIG['layer_name'],
-#     constants.CLASSIFICATION_CONFIG['seed'],
-#     settings.GPUID,
-# )
+ClassificationModel = PyTorchHelpers.load_lua_class(constants.CLASSIFICATION_LUA_PATH, 'ClassificationTorchModel')
+ClassificationTorchModel = ClassificationModel(
+    constants.CLASSIFICATION_CONFIG['proto_file'],
+    constants.CLASSIFICATION_CONFIG['model_file'],
+    constants.CLASSIFICATION_CONFIG['backend'],
+    constants.CLASSIFICATION_CONFIG['input_sz'],
+    constants.CLASSIFICATION_CONFIG['layer_name'],
+    constants.CLASSIFICATION_CONFIG['seed'],
+    settings.GPUID,
+)
 
 
 # Loading the VQA Model forever
@@ -39,12 +39,12 @@ VqaTorchModel = VQAModel(
 
 
 # Loading the Captioning model forever
-# CaptioningModel = PyTorchHelpers.load_lua_class(constants.CAPTIONING_LUA_PATH, 'CaptioningTorchModel')
-# CaptioningTorchModel = CaptioningModel(
-#     constants.CAPTIONING_CONFIG['input_sz'],
-#     constants.CAPTIONING_CONFIG['backend'],
-#     constants.CAPTIONING_CONFIG['layer'],
-#     constants.CAPTIONING_CONFIG['model_path'],
-#     constants.CAPTIONING_CONFIG['seed'],
-#     settings.GPUID,
-# )
+CaptioningModel = PyTorchHelpers.load_lua_class(constants.CAPTIONING_LUA_PATH, 'CaptioningTorchModel')
+CaptioningTorchModel = CaptioningModel(
+    constants.CAPTIONING_CONFIG['model_path'],
+    constants.CAPTIONING_CONFIG['backend'],
+    constants.CAPTIONING_CONFIG['input_sz'],
+    constants.CAPTIONING_CONFIG['layer'],
+    constants.CAPTIONING_CONFIG['seed'],
+    settings.GPUID,
+)
