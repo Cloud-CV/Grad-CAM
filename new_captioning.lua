@@ -1,14 +1,13 @@
 require 'torch'
 require 'nn'
-require 'lfs'
 require 'image'
 utils = require 'misc.utils'
 
 local preprocess = utils.preprocess
 
-local TorchModel = torch.class('TorchModel')
+local TorchModel = torch.class('CaptioningTorchModel')
 
-function TorchModel:__init(model_path, backend, input_sz, layer, seed, gpuid, out_path)
+function TorchModel:__init(model_path, backend, input_sz, layer, seed, gpuid)
 
   self.model_path = model_path
   self.backend = backend
@@ -16,11 +15,10 @@ function TorchModel:__init(model_path, backend, input_sz, layer, seed, gpuid, ou
   self.layer = layer
   self.seed = seed
   self.gpuid = gpuid
-  self.out_path = out_path
+  self:loadModel(model_path)
 
   torch.manualSeed(self.seed)
   torch.setdefaulttensortype('torch.FloatTensor')
-  lfs.mkdir(self.out_path)
 
   if self.gpuid >= 0 then
     require 'cunn'
@@ -33,7 +31,6 @@ function TorchModel:__init(model_path, backend, input_sz, layer, seed, gpuid, ou
   -- neuraltalk2-specific dependencies
   -- https://github.com/karpathy/neuraltalk2
 
-  self:loadModel(model_path)
 
 end
 
@@ -45,17 +42,21 @@ function TorchModel:loadModel(model_path)
   require 'neuraltalk2.misc.LanguageModel'
   local net_utils = require 'neuraltalk2.misc.net_utils'
 
+
   self.net = torch.load(model_path)
+  print(self.net)
   local cnn_lm_model = self.net
   local cnn = cnn_lm_model.protos.cnn
   local lm = cnn_lm_model.protos.lm
   local vocab = cnn_lm_model.vocab
+
 
   net_utils.unsanitize_gradients(cnn)
   local lm_modules = lm:getModulesList()
   for k,v in pairs(lm_modules) do
     net_utils.unsanitize_gradients(v)
   end
+
 
   -- Set to evaluate mode
   lm:evaluate()
@@ -68,7 +69,7 @@ function TorchModel:loadModel(model_path)
 end
 
 
-function TorchModel:predict(input_image_path, input_sz, input_sz, input_caption)
+function TorchModel:predict(input_image_path, input_sz, input_sz, input_caption, out_path)
 
   local img = utils.preprocess(input_image_path, input_sz, input_sz)
 
@@ -123,18 +124,24 @@ function TorchModel:predict(input_image_path, input_sz, input_sz, input_caption)
 
   local result = {}
   local hm = utils.to_heatmap(gcam)
-  image.save(self.out_path .. 'caption_gcam_'  .. input_caption .. '.png', image.toDisplayTensor(hm))
-  result[0] = self.out_path .. 'caption_gcam_'  .. input_caption .. '.png'
+  image.save(out_path .. 'caption_gcam_'  .. input_caption .. '.png', image.toDisplayTensor(hm))
+  result['captioning_gcam'] = out_path .. 'caption_gcam_'  .. input_caption .. '.png'
 
   -- Guided Backprop
   local gb_viz = cnn_gb:backward(img, dcnn)
-  image.save(self.out_path .. 'caption_gb_' .. input_caption .. '.png', image.toDisplayTensor(gb_viz))
-  result[1] = self.out_path .. 'caption_gb_' .. input_caption .. '.png'
+
+  -- BGR to RGB
+  gb_viz = gb_viz:index(1, torch.LongTensor{3, 2, 1})
+
+  image.save(out_path .. 'caption_gb_' .. input_caption .. '.png', image.toDisplayTensor(gb_viz))
+  result['captioning_gb'] = out_path .. 'caption_gb_' .. input_caption .. '.png'
 
   -- Guided Grad-CAM
   local gb_gcam = gb_viz:float():cmul(gcam:expandAs(gb_viz))
-  image.save(self.out_path .. 'caption_gb_gcam_' .. input_caption .. '.png', image.toDisplayTensor(gb_gcam))
-  result[2] = self.out_path .. 'caption_gb_gcam_' .. input_caption .. '.png'
+  image.save(out_path .. 'caption_gb_gcam_' .. input_caption .. '.png', image.toDisplayTensor(gb_gcam))
+  result['captioning_gb_gcam'] = out_path .. 'caption_gb_gcam_' .. input_caption .. '.png'
+  result['input_image'] = input_image_path
+  result['input_caption'] = input_caption
   return result
 
 end

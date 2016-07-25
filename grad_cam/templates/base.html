@@ -6,9 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://cloudcv.org/static/css/style.css">
-    <script src="http://cloudcv.org/static/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+
     <script src="/static/js/dropzone.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://cloudcv.org/static/js/vendor/jquery.ui.widget.js"></script>
+    <script src="http://cloudcv.org/node/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.3.0/min/dropzone.min.css">
 </head>
 <body>
@@ -211,17 +216,12 @@
 {% endblock %}
 
   </div>
-</div>
-
 
 <script>
     var socketid;
     var demo_running=0;
 
 </script>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="http://cloudcv.org/static/js/vendor/jquery.ui.widget.js"></script>
-<script src="http://cloudcv.org/node/socket.io/socket.io.js"></script>
 <script>
     var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
     var isFirefox = typeof InstallTrigger !== 'undefined';
@@ -369,6 +369,13 @@
         $("#answer").keypress(function(event) {
         if (event.which == 13) {
             submitImageForVqa();
+            console.log("submited the form");
+        }
+    });
+
+        $("#Caption").keypress(function(event) {
+        if (event.which == 13) {
+            submitImageForCaptioning();
             console.log("submited the form");
         }
     });

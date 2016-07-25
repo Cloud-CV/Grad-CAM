@@ -67,22 +67,22 @@ def classification(request, template_name="classification/classification.html"):
 
 def captioning(request, template_name="captioning/captioning.html"):
     if request.method == "POST":
-        try:
-            img_path = request.POST.get('img_path')
-            caption = request.POST.get('caption', '')
+        # try:
+        img_path = request.POST.get('img_path')
+        caption = request.POST.get('caption', '')
 
-            abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
-            out_dir = os.path.dirname(abs_image_path)
+        abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
+        out_dir = os.path.dirname(abs_image_path)
 
-            # Run the captioning wrapper
-            response = grad_cam_captioning(str(abs_image_path), int(caption), str(out_dir+"/"))
-            response['input_image'] = str(response['input_image']).replace(settings.BASE_DIR, '')
-            response['captioning_gcam'] = str(response['captioning_gcam']).replace(settings.BASE_DIR, '')
-            response['captioning_gb'] = str(response['captioning_gb']).replace(settings.BASE_DIR, '')
-            response['captioning_gb_gcam'] = str(response['captioning_gb_gcam']).replace(settings.BASE_DIR, '')
-            return JsonResponse(response)
-        except Exception as e:
-            return JsonResponse({"error": str(e)})
+        # Run the captioning wrapper
+        response = grad_cam_captioning(str(abs_image_path), str(caption), str(out_dir+"/"))
+        response['input_image'] = str(response['input_image']).replace(settings.BASE_DIR, '')
+        response['captioning_gcam'] = str(response['captioning_gcam']).replace(settings.BASE_DIR, '')
+        response['captioning_gb'] = str(response['captioning_gb']).replace(settings.BASE_DIR, '')
+        response['captioning_gb_gcam'] = str(response['captioning_gb_gcam']).replace(settings.BASE_DIR, '')
+        return JsonResponse(response)
+        # except Exception as e:
+        #     return JsonResponse({"error": str(e)})
 
     demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
     return render(request, template_name, {"demo_images": demo_images})
@@ -102,7 +102,7 @@ def file_upload(request):
 
         random_uuid = uuid.uuid1()
         # handle image upload
-        output_dir = os.path.join(constants.CLASSIFICATION_CONFIG['image_dir'], str(random_uuid))
+        output_dir = os.path.join(dir_type, str(random_uuid))
 
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)

@@ -84,16 +84,11 @@ opacity: 0.3;
 
 
 <script type="text/javascript">
-  // var myDropzone = new Dropzone("#fileupload", { url: "{% url "upload" %}"});
-  // myDropzone.on('sending', function(file, xhr, formData){
-  //           formData.append('type', $("#appType").val());
-  //   });
-
   // Overriden 
   Dropzone.options.myDropzone = {
     autoProcessQueue: true,
     uploadMultiple: false,
-    maxFiles: 1,
+    maxFiles: 10,
 
     init: function() {
       var myDropzone = this;
@@ -145,10 +140,11 @@ function submitImageForVqa () {
   })// using the done promise callback
   .done(function(response) {
     console.log(response);
+    var d = new Date();
     $("#overImg1").attr("src", response['input_image']);
-    $("#img1").attr("src",response['vqa_gcam']);
-    $("#img2").attr("src",response['vqa_gb']);
-    $("#img3").attr("src",response['vqa_gb_gcam']);
+    $("#img1").attr("src",response['vqa_gcam']+"?"+d.getTime());
+    $("#img2").attr("src",response['vqa_gb']+"?"+d.getTime());
+    $("#img3").attr("src",response['vqa_gb_gcam']+"?"+d.getTime());
     $("#predictedAnswer").text(response['answer']);
     $("#inputAnswer").text(response['input_answer']);
     $("#show-grad-cam-result").show();
@@ -186,18 +182,15 @@ function submitImageForVqa () {
     <div class="col-md-4">
       <img src="" class="col-md-12 finalImages" id="img2">
         <p class="caption" style="font-size: 14 px;" align="left">Guided Backprop</p>
-      </img>
     </div>
     <div class="col-md-4">
       <img src="" class="over col-md-12 finalImages" id="overImg1" />
       <img src="" class="under col-md-12 finalImages" id="img1">
       <p class="caption" style="font-size: 14 px;" align="left" id="gradCamCaption">Grad-CAM</p>
-      </img>
     </div>
     <div class="col-md-4">
       <img src="" class="col-md-12 finalImages" id="img3">
         <p class="caption" style="font-size: 14 px; padding-left: 5px;" align="left">Guided Grad-CAM</p>
-      </img>
     </div>
   </div>
   </div>

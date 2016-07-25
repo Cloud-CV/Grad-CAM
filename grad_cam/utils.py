@@ -18,6 +18,6 @@ def grad_cam_classification(image_path, label, output_dir):
     return ClassificationTorchModel.predict(image_path, label, output_dir)
 
 
-def grad_cam_captioning(image_path, label, output_dir):
+def grad_cam_captioning(image_path, caption, output_dir):
 
-    return CaptioningTorchModel.predict(image_path, constants.VQA_CONFIG['input_sz'], constants.VQA_CONFIG['input_sz'], caption)
+    return CaptioningTorchModel.predict(image_path, constants.VQA_CONFIG['input_sz'], constants.VQA_CONFIG['input_sz'], caption, output_dir)

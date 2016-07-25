@@ -1,30 +1,26 @@
 require 'torch'
 require 'nn'
-require 'lfs'
 require 'image'
 require 'loadcaffe'
 utils = require 'misc.utils'
 
 local preprocess = utils.preprocess
 
-local TorchModel = torch.class('TorchModel')
+local TorchModel = torch.class('ClassificationTorchModel')
 
-function TorchModel:__init(proto_file, model_file, backend, input_sz, layer_name, label, seed, gpuid, out_path)
+function TorchModel:__init(proto_file, model_file, backend, input_sz, layer_name, seed, gpuid)
 
   self.proto_file = proto_file
   self.model_file = model_file
   self.backend = backend
   self.input_sz = input_sz
   self.layer_name = layer_name
-  self.label = label
   self.seed = seed
   self.gpuid = gpuid
-  self.out_path = out_path
   self:loadModel(proto_file, model_file, backend)
-
   torch.manualSeed(self.seed)
   torch.setdefaulttensortype('torch.DoubleTensor')
-  lfs.mkdir(self.out_path)
+  
   if gpuid >= 0 then
     require 'cunn'
     require 'cutorch'
@@ -44,7 +40,7 @@ function TorchModel:loadModel(proto_file, model_file, backend)
   cnn:remove()
 end
 
-function TorchModel:processData(input_image_path, input_sz, input_sz)
+function TorchModel:predict(input_image_path, label, out_path)
   -- Clone & replace ReLUs for Guided Backprop
   local cnn_gb = self.net:clone()
 
@@ -64,7 +60,7 @@ function TorchModel:processData(input_image_path, input_sz, input_sz)
   local output_gb = cnn_gb:forward(img)
 
   -- Set gradInput
-  local doutput = utils.create_grad_input(self.net.modules[#self.net.modules], self.label)
+  local doutput = utils.create_grad_input(self.net.modules[#self.net.modules], label)
 
   -- Grad-CAM
   local result = {}
@@ -72,17 +68,22 @@ function TorchModel:processData(input_image_path, input_sz, input_sz)
   gcam = image.scale(gcam:float(), self.input_sz, self.input_sz)
   local hm = utils.to_heatmap(gcam)
 
-  image.save(self.out_path .. 'classify_gcam_' .. self.label .. '.png', image.toDisplayTensor(hm))
-  result[0] = self.out_path .. 'classify_gcam_' .. self.label .. '.png'
+  image.save(out_path .. 'classify_gcam_' .. label .. '.png', image.toDisplayTensor(hm))
+  result['classify_gcam'] = out_path .. 'classify_gcam_' .. label .. '.png'
 
   -- Guided Backprop
   local gb_viz = cnn_gb:backward(img, doutput)
-  image.save(self.out_path .. 'classify_gb_' .. self.label .. '.png', image.toDisplayTensor(gb_viz))
-  result[1] = self.out_path .. 'classify_gb_' .. self.label .. '.png'
+  
+  -- BGR to RGB
+  gb_viz = gb_viz:index(1, torch.LongTensor{3, 2, 1})
+  image.save(out_path .. 'classify_gb_' .. label .. '.png', image.toDisplayTensor(gb_viz))
+  result['classify_gb'] = out_path .. 'classify_gb_' .. label .. '.png'
 
   -- Guided Grad-CAM
   local gb_gcam = gb_viz:float():cmul(gcam:expandAs(gb_viz))
-  image.save(self.out_path .. 'classify_gb_gcam_' .. self.label .. '.png', image.toDisplayTensor(gb_gcam))
-  result[2] = self.out_path .. 'classify_gb_gcam_' .. self.label .. '.png'
+  image.save(out_path .. 'classify_gb_gcam_' .. label .. '.png', image.toDisplayTensor(gb_gcam))
+  result['classify_gb_gcam'] = out_path .. 'classify_gb_gcam_' .. label .. '.png'
+  result['input_image'] = input_image_path
   return result
+
 end
