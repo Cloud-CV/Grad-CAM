@@ -59,6 +59,14 @@ function TorchModel:predict(input_image_path, label, out_path)
   local output = self.net:forward(img)
   local output_gb = cnn_gb:forward(img)
 
+  -- Take argmax
+  local score, pred_label = torch.max(output,1)
+
+  if label == -1 then 
+    print("No label provided, using predicted label ", pred_label:float())
+    label = pred_label[1]
+  end
+
   -- Set gradInput
   local doutput = utils.create_grad_input(self.net.modules[#self.net.modules], label)
 
@@ -84,6 +92,7 @@ function TorchModel:predict(input_image_path, label, out_path)
   image.save(out_path .. 'classify_gb_gcam_' .. label .. '.png', image.toDisplayTensor(gb_gcam))
   result['classify_gb_gcam'] = out_path .. 'classify_gb_gcam_' .. label .. '.png'
   result['input_image'] = input_image_path
+  result['label'] = label
   return result
 
 end
