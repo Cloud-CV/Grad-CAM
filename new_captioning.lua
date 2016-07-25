@@ -140,8 +140,11 @@ function TorchModel:predict(input_image_path, input_sz, input_sz, input_caption,
   local gb_gcam = gb_viz:float():cmul(gcam:expandAs(gb_viz))
   image.save(out_path .. 'caption_gb_gcam_' .. input_caption .. '.png', image.toDisplayTensor(gb_gcam))
   result['captioning_gb_gcam'] = out_path .. 'caption_gb_gcam_' .. input_caption .. '.png'
+
   result['input_image'] = input_image_path
   result['input_caption'] = input_caption
+  result['pred_caption'] = caption[1]
+
   return result
 
 end

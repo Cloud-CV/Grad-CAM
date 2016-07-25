@@ -16,7 +16,7 @@
     font-weight: bold;
 }
 
-#inputCaption, #predictedAnswer{
+#inputCaption, #predictedCaption{
     font-weight: bold;
 }
 
@@ -129,6 +129,7 @@ function submitImageForCaptioning () {
     var d = new Date();
     console.log(response);
     $("#inputCaption").text(response['input_caption']);
+    $("#predictedCaption").text(response['pred_caption']);
     $("#overImg1").attr("src", response['input_image']);
     $("#img1").attr("src",response['captioning_gcam']+"?"+d.getTime());
     $("#img2").attr("src",response['captioning_gb']+"?"+d.getTime());
@@ -153,6 +154,11 @@ function submitImageForCaptioning () {
 </div>
 
 <div class="row demoImages" style="display:None;" id="show-grad-cam-result" >
+
+  <div class="col-md-12 resultText">
+    <h3 style="display: inline;" align="center">Predicted Caption : &nbsp;</h3>
+    <h3 id="predictedCaption" style="display: inline;" class="center"></h3>
+  </div>
 
   <div class="col-md-12 resultText">
     <h3 style="display: inline;" class="center">Generating Grad-CAM visualizations for: &nbsp;</h3>

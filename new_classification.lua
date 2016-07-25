@@ -92,7 +92,10 @@ function TorchModel:predict(input_image_path, label, out_path)
   image.save(out_path .. 'classify_gb_gcam_' .. label .. '.png', image.toDisplayTensor(gb_gcam))
   result['classify_gb_gcam'] = out_path .. 'classify_gb_gcam_' .. label .. '.png'
   result['input_image'] = input_image_path
+
   result['label'] = label
+  result['pred_label'] = pred_label[1]
+
   return result
 
 end
