@@ -46,7 +46,7 @@ def classification(request, template_name="classification/classification.html"):
     if request.method == "POST":
         try:
             img_path = request.POST.get('img_path')
-            label = request.POST.get('label', 243)
+            label = request.POST.get('label')
 
             abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
             out_dir = os.path.dirname(abs_image_path)
@@ -67,22 +67,22 @@ def classification(request, template_name="classification/classification.html"):
 
 def captioning(request, template_name="captioning/captioning.html"):
     if request.method == "POST":
-        # try:
-        img_path = request.POST.get('img_path')
-        caption = request.POST.get('caption', '')
+        try:
+            img_path = request.POST.get('img_path')
+            caption = request.POST.get('caption', '')
 
-        abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
-        out_dir = os.path.dirname(abs_image_path)
+            abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
+            out_dir = os.path.dirname(abs_image_path)
 
-        # Run the captioning wrapper
-        response = grad_cam_captioning(str(abs_image_path), str(caption), str(out_dir+"/"))
-        response['input_image'] = str(response['input_image']).replace(settings.BASE_DIR, '')
-        response['captioning_gcam'] = str(response['captioning_gcam']).replace(settings.BASE_DIR, '')
-        response['captioning_gb'] = str(response['captioning_gb']).replace(settings.BASE_DIR, '')
-        response['captioning_gb_gcam'] = str(response['captioning_gb_gcam']).replace(settings.BASE_DIR, '')
-        return JsonResponse(response)
-        # except Exception as e:
-        #     return JsonResponse({"error": str(e)})
+            # Run the captioning wrapper
+            response = grad_cam_captioning(str(abs_image_path), str(caption), str(out_dir+"/"))
+            response['input_image'] = str(response['input_image']).replace(settings.BASE_DIR, '')
+            response['captioning_gcam'] = str(response['captioning_gcam']).replace(settings.BASE_DIR, '')
+            response['captioning_gb'] = str(response['captioning_gb']).replace(settings.BASE_DIR, '')
+            response['captioning_gb_gcam'] = str(response['captioning_gb_gcam']).replace(settings.BASE_DIR, '')
+            return JsonResponse(response)
+        except Exception as e:
+            return JsonResponse({"error": str(e)})
 
     demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
     return render(request, template_name, {"demo_images": demo_images})
@@ -112,6 +112,12 @@ def file_upload(request):
         return JsonResponse({"file_path": img_path.replace(settings.BASE_DIR, '')})    
 
 
+def handle_uploaded_file(f, path):
+    with open(path, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+
 def get_demo_images(demo_images_path):
     try:
         demo_images = [random.choice(next(os.walk(demo_images_path))[2]) for i in range(6)]
@@ -122,8 +128,3 @@ def get_demo_images(demo_images_path):
 
     return demo_images
 
-
-def handle_uploaded_file(f, path):
-    with open(path, 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)

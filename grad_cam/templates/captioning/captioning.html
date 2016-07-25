@@ -39,20 +39,24 @@ opacity: 0.3;
 
 #gradCamCaption{
   position: relative;
-  padding-top: 300px;
+  padding-top: 350px;
 }
 
 .finalImages{
-  width: 300px !important;
-  height: 300px !important;
+  width: 350px !important;
+  height: 350px !important;
   padding: 6px;
+}
+
+.resultText{
+  margin-bottom: 15px !important;
 }
 
 </style>
 
 <div class="container">
   <div class="page-header">
-    <h2 id="userImages">Try CloudCV Captioning On Your Images</h2>
+    <h2 id="userImages">Try Captioning On Your Images</h2>
   </div>
 
   <form id="my-dropzone" method="post" class="dropzone
@@ -130,12 +134,15 @@ function submitImageForCaptioning () {
     $("#img2").attr("src",response['captioning_gb']+"?"+d.getTime());
     $("#img3").attr("src",response['captioning_gb_gcam']+"?"+d.getTime());
     $("#show-grad-cam-result").show();
-    scrollToElement($("#resultHeading"));
+    scrollToElement($("#show-grad-cam-result"));
   });
 }
 </script>
 <br>
-<div id="ResultDiv" class="row" style="padding-bottom:100px; display:None;">
+  <div class="page-header">
+    <h2 id="resultHeading" class="center">Result of Grad-CAM for Captioning</h2>
+  </div>
+<div id="ResultDiv" class="row" style="padding-bottom:50px; display:None;">
   <div class="col-md-5" style="padding-bottom: 30px; clear: both;">
     <img class="img-responsive" src="" style="height: 300px;" id="inputImageAfterUpload">
   </div>
@@ -146,27 +153,39 @@ function submitImageForCaptioning () {
 </div>
 
 <div class="row demoImages" style="display:None;" id="show-grad-cam-result" >
-  <h2 id="resultHeading" class="page-header">Result of Grad-CAM Captioning</h2>
-  <h3 style="display: inline;" class="center">Generating Grad-CAM visualizations for: &nbsp;</h3>
-  <h3 id="inputCaption" style="display: inline;" align="center"></h3>
+
+  <div class="col-md-12 resultText">
+    <h3 style="display: inline;" class="center">Generating Grad-CAM visualizations for: &nbsp;</h3>
+    <h3 id="inputCaption" style="display: inline;" align="center"></h3>
+  </div>
+
   <div class="col-md-4">
     <img src="" class="col-md-12 finalImages" id="img2">
       <p class="caption" style="font-size: 14 px;" align="left">Guided Backprop</p>
   </div>
+
   <div class="col-md-4">
     <img src="" class="over col-md-12 finalImages" id="overImg1" />
     <img src="" class="under col-md-12 finalImages" id="img1">
     <p class="caption" style="font-size: 14 px;" align="left" id="gradCamCaption">Grad-CAM</p>
   </div>
+
   <div class="col-md-4">
     <img src="" class="col-md-12 finalImages" id="img3">
       <p class="caption" style="font-size: 14 px; padding-left: 5px;" align="left">Guided Grad-CAM</p>
   </div>
-</div>
+
 </div>
 {% endblock %}
 
 {% block credits %}
+<h2 class="page-header"> Credits </h2>
+  <font size="4">
+    <a href="https://github.com/karpathy/neuraltalk2">Code for Neuraltalk2</a><br>
+    <br><br>
+  </font>
+  <br>
+</div>
 {% endblock %}
 </body>
 

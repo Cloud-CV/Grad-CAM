@@ -51,13 +51,17 @@ opacity: 0.3;
 
 #gradCamCaption{
   position: relative;
-  padding-top: 300px;
+  padding-top: 350px;
 }
 
 .finalImages{
-  width: 300px !important;
-  height: 300px !important;
+  width: 350px !important;
+  height: 350px !important;
   padding: 6px;
+}
+
+.resultText{
+  margin-bottom: 15px !important;
 }
 
 </style>
@@ -171,11 +175,15 @@ function submitImageForVqa () {
   </div>
 </div>
   <div class="row demoImages" style="display:None;" id="show-grad-cam-result" >
-  <h3 style="display: inline;" align="center">Predicted Answer : &nbsp;</h3>
-  <h3 id="predictedAnswer" style="display: inline;" class="center"></h3>
-  <br>
-  <h3 style="display: inline;" class="center">Generating Grad-CAM visualizations for: &nbsp;</h3>
-  <h3 id="inputAnswer" style="display: inline;" align="center"></h3>
+    <div class="col-md-12 resultText">
+      <h3 style="display: inline;" align="center">Predicted Answer : &nbsp;</h3>
+      <h3 id="predictedAnswer" style="display: inline;" class="center"></h3>
+    </div>
+
+    <div class="col-md-12 resultText">
+      <h3 style="display: inline;" class="center">Generating Grad-CAM visualizations for: &nbsp;</h3>
+      <h3 id="inputAnswer" style="display: inline;" align="center"></h3>
+    </div>
 
   <div class="row">
     
@@ -197,7 +205,7 @@ function submitImageForVqa () {
 {% endblock %}
 
 {% block credits %}
-<h3> Credits </h3>
+<h2 class="page-header"> Credits </h2>
 <font size="4">
   <a href="https://github.com/VT-vision-lab/VQA_LSTM_CNN">Code for VQA Model</a><br>
   <br><br>

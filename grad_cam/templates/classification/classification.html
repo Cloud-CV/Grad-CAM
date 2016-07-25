@@ -21,7 +21,7 @@
 
 <div class="container">
   <div class="page-header">
-    <h2 id="userImages">Try CloudCV Grad-CAM On Your Images</h2>
+    <h2 id="userImages">Try Grad-CAM On Your Images</h2>
   </div>
 
   <form id="my-dropzone" method="post" class="dropzone
@@ -71,15 +71,18 @@ opacity: 0.3;
 
 #gradCamCaption{
   position: relative;
-  padding-top: 300px;
+  padding-top: 350px;
 }
 
 .finalImages{
-  width: 300px !important;
-  height: 300px !important;
+  width: 350px !important;
+  height: 350px !important;
   padding: 6px;
 }
 
+.resultText{
+  margin-bottom: 15px !important;
+}
 </style>
 
 <script type="text/javascript">
@@ -1119,7 +1122,7 @@ function submitImageForClassification () {
           return false;
         }
 
-        label_id = 1;
+        label_id = -1;
   });
 
   console.log("The label id is " + label_id);
@@ -1134,16 +1137,13 @@ function submitImageForClassification () {
   })// using the done promise callback
   .done(function(response) {
     console.log(response);
-    $("#inputLabel").text(labels[label_id]);
+    $("#inputLabel").text(labels[response['label']]);
     $("#overImg1").attr("src", response['input_image']);
-
-
     // Below is a hacky way to get the new images from backend since browser caches the previous images
     var d = new Date();
     $("#img1").attr("src",response['classify_gcam']+"?"+d.getTime());
     $("#img2").attr("src",response['classify_gb']+"?"+d.getTime());
     $("#img3").attr("src",response['classify_gb_gcam']+"?"+d.getTime());
-
     $("#show-grad-cam-result").show();
     scrollToElement($("#show-grad-cam-result"));
 
@@ -1178,6 +1178,9 @@ function submitImageForClassification () {
 
 </script>
 <br>
+  <div class="page-header">
+    <h2 id="resultHeading" class="center">Result of Grad-CAM for Classification</h2>
+  </div>
 <div id="ResultDiv" class="row" style="padding-bottom:50px; display:None;">
   <div class="col-md-5" style="padding-bottom: 30px; clear: both;">
     <img class="img-responsive" src="" style="height: 300px;" id="inputImageAfterUpload">
@@ -1189,9 +1192,11 @@ function submitImageForClassification () {
   </div>
 </div>
   <div class="row demoImages" style="display:None;" id="show-grad-cam-result" >
-  <h2 id="resultHeading" class="page-header">Result of Grad-CAM Classification</h2>
-  <h3 >Generating Grad-CAM visualizations for: &nbsp;</h3>
-  <h3 id="inputLabel"></h3>
+
+    <div class="col-md-12 resultText">
+      <h3 style="display: inline;" class="center">Generating Grad-CAM visualizations for: &nbsp;</h3>
+      <h3 style="display: inline;" class="center" id="inputLabel"></h3> 
+    </div>
 
     <div class="col-md-4">
       <img src="" class="col-md-12 finalImages" id="img2">
@@ -1207,6 +1212,18 @@ function submitImageForClassification () {
         <p class="caption" style="font-size: 14 px; padding-left: 5px;" align="left">Guided Grad-CAM</p>
     </div>
 </div>
+{% endblock %}
+
+{% block credits %}
+<h2 class="page-header container"> Credits </h2>
+<!-- <font size="4">
+  <a href="https://github.com/VT-vision-lab/VQA_LSTM_CNN">Code for VQA Model</a><br>
+  <br><br>
+</font>
+ -->
+ <br>
+</div>
+
 {% endblock %}
 </body>
 

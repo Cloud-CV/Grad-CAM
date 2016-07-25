@@ -380,6 +380,12 @@
         }
     });
 
+        $("#label").keypress(function(event) {
+        if (event.which == 13) {
+            submitImageForClassification();
+            console.log("submited the form");
+        }
+    });
 </script>
 
 </body>
