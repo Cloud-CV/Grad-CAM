@@ -7,9 +7,11 @@ function utils.preprocess(path, width, height)
   -- load image
   local orig_image = image.load(path)
 
-  -- if the image is grayscale, repeat the tensor
-  if orig_image:nDimension() == 2 then
+  -- handle greyscale and rgba images
+  if orig_image:size(1) == 1 then
     orig_image = orig_image:repeatTensor(3, 1, 1)
+  elseif orig_image:size(1) == 4 then
+    orig_image = orig_image[{{1,3},{},{}}]
   end
 
   -- get the dimensions of the original image
@@ -82,7 +84,8 @@ end
 function utils.grad_cam(cnn, layer_name, doutput)
   -- Split model into two
   local model1, model2 = nn.Sequential(), nn.Sequential()
-  if type(layer_name) == "string" then
+  if tonumber(layer_name) == nil then
+
    for i = 1, #cnn.modules do
       model1:add(cnn:get(i))
       layer_id = i
@@ -91,10 +94,11 @@ function utils.grad_cam(cnn, layer_name, doutput)
       end
     end
   else
-    layer_id = layer_name
+
+    layer_id = tonumber(layer_name)
     for i = 1, #cnn.modules do
       model1:add(cnn:get(i))
-    if i == layer_id then
+      if i == layer_id then
         break
       end
     end
@@ -107,8 +111,10 @@ function utils.grad_cam(cnn, layer_name, doutput)
   -- Get activations and gradients
   model2:zeroGradParameters()
   model2:backward(model1.output, doutput)
-  local activations = model1.output
-  local gradients = model2.gradInput
+  
+  -- Get the activations from model1 and and gradients from model2
+  local activations = model1.output:squeeze()
+  local gradients = model2.gradInput:squeeze()
 
   -- Global average pool gradients
   local weights = torch.sum(gradients:view(activations:size(1), -1), 2)
@@ -131,11 +137,11 @@ end
 function utils.sent_to_label(vocab, sent, seq_length)
   local inv_vocab = utils.table_invert(vocab)
   local labels = torch.zeros(seq_length,1)
-  local i =0
+  local i = 0
   for word in sent:gmatch'%w+' do
     -- we replace out of vocabulary words with UNK
     if inv_vocab[word] == nil then
-      word = 'UNK'
+        word = 'UNK'
     end
     local ix_word = inv_vocab[word]
     i = i+1

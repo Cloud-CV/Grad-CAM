@@ -2,17 +2,17 @@
 
 {% block header_content %}
 
+<a href="//github.com/ramprs/grad-cam" target="_blank"><img style="position: fixed; top: 0; right: 0; border: 0; z-index:2000;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+
 <div class="container">
     <div class="page-header">
-        <h1 align="center">Grad-CAM</h1>
-        <h2 align="center">Gradient-weighted Class Activation Mapping</h2>
-        <h3 align="center">Code for Grad-CAM can be found <a href="https://github.com/ramprasaath21/grad-cam">here.</a></h3>
+        <h1 align="center">Grad-CAM: Gradient-weighted Class Activation Mapping</h1>
+        <br><h4>Grad-CAM highlights regions of the image the VQA model looks at while making predictions.</h4>
         <font size="4">
-            <p style="text-align:center;"><font size="4">Grad-CAM can generate heatmaps for questions you ask about an image</font><br><br>
-                <span style="font-size: 14px;">Browsers currently supported: Google Chrome, Mozilla Firefox</span>
+            <p>
+                Torch code for Grad-CAM is available <a href="//github.com/ramprs/grad-cam">here</a>. Browsers currently supported by the demo: Google Chrome, Mozilla Firefox.
             </p>
         </font>
-        <br><br>
     </div>
 </div>
 
@@ -22,8 +22,6 @@
 <style type="text/css">
 
   .caption {
-    /*display: block;*/
-    /*text-align: center;*/
     font-size: 18px !important;
     font-weight: bold;
 }
@@ -35,16 +33,12 @@
 .under
 {
 position:absolute;
-/*left:0px;
-top:0px;*/
 z-index:-1;
 }
 
 .over
 {
 position:absolute;
-/*left:40px;*/
-/*top:10px;*/
 z-index:0;
 mix-blend-mode: multiply;
 }
@@ -1219,6 +1213,7 @@ function submitImageForVqa () {
 <h2 class="page-header"> Credits </h2>
 <font size="4">
   <a href="https://github.com/VT-vision-lab/VQA_LSTM_CNN">Code for VQA Model</a><br>
+    Built by <a href="http://github.com/DESHRAJ" target="_blank">@deshraj</a><br>
   <br><br>
 </font>
 <br>
