@@ -1,2 +1,4 @@
 models/
 !models/download_models.sh
+*.pyc
+media/
