@@ -6,6 +6,62 @@
 
 {% endblock %}
 
+{% block demo_images %}
+
+<div class="container">
+    <div class="page-header">
+        <h2>Try CloudCV Grad-CAM: Sample Images</h2>
+        <br>
+        <div class="row">
+            <div class="col-md-8 col-xs-12">
+                <font size="4">Click on one of these images to send it to our servers (Or <a class="button_link" onclick="scrollToElement($('#userImages'))">upload</a>
+                    your own images below)</font>
+            </div>
+            <div id="show-demo-images-btn" class="col-md-4">
+            <button  class="btn btn-info">Show Demo Images</button>
+            </div>
+        </div>
+         <div class="row hiddenDiv demoImages" id="demoImages1">
+            <img src="/media/grad_cam/demo_captioning/COCO_val2014_000000125524.jpg"
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="/media/grad_cam/demo_captioning/COCO_val2014_000000396387.jpg"
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="/media/grad_cam/demo_captioning/COCO_val2014_000000008401.jpg"
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+         </div>
+         <div class="row hiddenDiv demoImages" id="demoImages2">
+            <img src="/media/grad_cam/demo_captioning/COCO_val2014_000000381246.jpg"
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="/media/grad_cam/demo_captioning/COCO_val2014_000000223766.jpg"
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="/media/grad_cam/demo_captioning/COCO_val2014_000000096638.jpg"
+                 onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <br>
+         </div>
+        <div class="row randomImages" id="demoImages3">
+            <img src="{{ demo_images.0 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="{{ demo_images.1 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="{{ demo_images.2 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+        </div>
+        <div class="row randomImages" id="demoImages4">
+            <img src="{{ demo_images.3 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="{{ demo_images.4 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+            <img src="{{ demo_images.5 }}"
+                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
+             <br>
+        </div>
+        Note: nothing is pre-computed for these images. They are treated as a fresh upload with every click.
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
 {% block form %}
 <style type="text/css">
 
@@ -34,7 +90,7 @@ position:absolute;
 /*left:40px;*/
 /*top:10px;*/
 z-index:0;
-opacity: 0.3;
+mix-blend-mode: multiply;
 }
 
 #gradCamCaption{
@@ -131,7 +187,7 @@ function submitImageForCaptioning () {
     $("#inputCaption").text(response['input_caption']);
     $("#predictedCaption").text(response['pred_caption']);
     $("#overImg1").attr("src", response['input_image']);
-    $("#img1").attr("src",response['captioning_gcam']+"?"+d.getTime());
+    $("#img1").attr("src",response['captioning_gcam_raw']+"?"+d.getTime());
     $("#img2").attr("src",response['captioning_gb']+"?"+d.getTime());
     $("#img3").attr("src",response['captioning_gb_gcam']+"?"+d.getTime());
     $("#show-grad-cam-result").show();

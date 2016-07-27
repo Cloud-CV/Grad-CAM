@@ -76,6 +76,9 @@ function TorchModel:predict(input_image_path, label, out_path)
   gcam = image.scale(gcam:float(), self.input_sz, self.input_sz)
   local hm = utils.to_heatmap(gcam)
 
+  image.save(out_path .. 'classify_gcam_raw_' .. label .. '.png', image.toDisplayTensor(gcam))
+  result['classify_gcam_raw'] = out_path .. 'classify_gcam_raw_' .. label .. '.png'
+
   image.save(out_path .. 'classify_gcam_' .. label .. '.png', image.toDisplayTensor(hm))
   result['classify_gcam'] = out_path .. 'classify_gcam_' .. label .. '.png'
 
@@ -95,7 +98,6 @@ function TorchModel:predict(input_image_path, label, out_path)
 
   result['label'] = label
   result['pred_label'] = pred_label[1]
-
   return result
 
 end

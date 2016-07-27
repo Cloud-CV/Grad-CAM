@@ -195,6 +195,10 @@ function TorchModel:predict(input_image_path, input_sz, input_sz, input_question
 
   local result = {}
   local hm = utils.to_heatmap(gcam)
+
+  image.save(out_path .. 'vqa_gcam_raw_' .. input_answer .. '.png', image.toDisplayTensor(gcam))
+  result['vqa_gcam_raw'] = out_path .. 'vqa_gcam_raw_' .. input_answer .. '.png'
+
   image.save(out_path .. 'vqa_gcam_' .. input_answer .. '.png', image.toDisplayTensor(hm))
   result['vqa_gcam'] = out_path .. 'vqa_gcam_' .. input_answer .. '.png'
 

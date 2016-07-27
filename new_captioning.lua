@@ -124,6 +124,10 @@ function TorchModel:predict(input_image_path, input_sz, input_sz, input_caption,
 
   local result = {}
   local hm = utils.to_heatmap(gcam)
+
+  image.save(out_path .. 'captioning_gcam_raw_' .. input_caption .. '.png', image.toDisplayTensor(gcam))
+  result['captioning_gcam_raw'] = out_path .. 'captioning_gcam_raw_' .. input_caption .. '.png'
+
   image.save(out_path .. 'caption_gcam_'  .. input_caption .. '.png', image.toDisplayTensor(hm))
   result['captioning_gcam'] = out_path .. 'caption_gcam_'  .. input_caption .. '.png'
 
