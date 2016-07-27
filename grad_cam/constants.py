@@ -21,7 +21,7 @@ VQA_CONFIG = {
     'image_dir': os.path.join(settings.BASE_DIR, 'media', 'grad_cam', 'vqa')
 }
 
-VQA_LUA_PATH = "new_vqa.lua"
+VQA_LUA_PATH = "visual_question_answering.lua"
 
 
 CLASSIFICATION_CONFIG = {
@@ -34,7 +34,7 @@ CLASSIFICATION_CONFIG = {
     'image_dir': os.path.join(settings.BASE_DIR, 'media', 'grad_cam', 'classification')
 }
 
-CLASSIFICATION_LUA_PATH = "new_classification.lua"
+CLASSIFICATION_LUA_PATH = "classification.lua"
 
 
 CAPTIONING_CONFIG = {
@@ -46,4 +46,4 @@ CAPTIONING_CONFIG = {
     'image_dir': os.path.join(settings.BASE_DIR, 'media', 'grad_cam', 'captioning')
 }
 
-CAPTIONING_LUA_PATH = "new_captioning.lua"
+CAPTIONING_LUA_PATH = "captioning.lua"
