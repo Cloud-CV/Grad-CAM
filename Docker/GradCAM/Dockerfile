@@ -29,9 +29,9 @@ RUN git clone https://github.com/DESHRAJ/grad-cam.git
 RUN cd grad-cam && git submodule init && git submodule update
 
 # Change relative path in lua for neuraltalk2
-RUN cd grad-cam && sed -i -e "s/local utils = require 'neuraltalk2.misc.utils'/local utils = require 'misc.utils'/g" neuraltalk2/misc/LanguageModel.lua
-RUN cd grad-cam && sed -i -e "s/local net_utils = require 'neuraltalk2.misc.net_utils'/local net_utils = require 'misc.net_utils'/g" neuraltalk2/misc/LanguageModel.lua
-RUN cd grad-cam && sed -i -e "s/local LSTM = require 'neuraltalk2.misc.LSTM'/local LSTM = require 'misc.LSTM'/g" neuraltalk2/misc/LanguageModel.lua
+RUN cd grad-cam && sed -i -e "s/local utils = require 'misc.utils'/local utils = require 'neuraltalk2.misc.utils'/g" neuraltalk2/misc/LanguageModel.lua
+RUN cd grad-cam && sed -i -e "s/local net_utils = require 'misc.net_utils'/local net_utils = require 'neuraltalk2.misc.net_utils'/g" neuraltalk2/misc/LanguageModel.lua
+RUN cd grad-cam && sed -i -e "s/local LSTM = require 'misc.LSTM'/local LSTM = require 'neuraltalk2.misc.LSTM'/g" neuraltalk2/misc/LanguageModel.lua
 
 # Install python dependencies
 RUN cd grad-cam && pip install -r requirements.txt
@@ -47,7 +47,6 @@ RUN apt-get install -y unzip wget
 
 # Downlaod the models
 RUN cd grad-cam && bash models/download_models.sh && pwd
-
 
 WORKDIR /grad-cam
 
