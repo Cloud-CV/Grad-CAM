@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
 
-from grad_cam.utils import grad_cam_vqa, grad_cam_classification, grad_cam_captioning
+# from grad_cam.utils import grad_cam_vqa, grad_cam_classification, grad_cam_captioning
+from grad_cam.tasks import grad_cam_classification
 
 import grad_cam.constants as constants
 import uuid
@@ -53,7 +54,7 @@ def classification(request, template_name="classification/classification.html"):
             out_dir = os.path.dirname(abs_image_path)
 
             # Run the classification wrapper
-            response = grad_cam_classification(str(abs_image_path), int(label), str(out_dir+"/"))
+            response = grad_cam_classification.delay(str(abs_image_path), int(label), str(out_dir+"/"))
             response['input_image'] = str(response['input_image']).replace(settings.BASE_DIR, '')
             response['classify_gcam'] = str(response['classify_gcam']).replace(settings.BASE_DIR, '')
             response['classify_gcam_raw'] = str(response['classify_gcam_raw']).replace(settings.BASE_DIR, '')
