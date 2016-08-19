@@ -5,7 +5,7 @@ from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'demo.settings')
-
+# os.environ['LD_LIBRARY_PATH'] = "/home/cvmlp/Documents/cuda/lib64"
 from django.conf import settings  # noqa
 
 import grad_cam.constants as constants

@@ -82,7 +82,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-GPUID = 1
+GPUID = 0
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

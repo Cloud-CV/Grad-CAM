@@ -7,7 +7,9 @@ import grad_cam.constants as constants
 import os
 # from grad_cam.torch_models import VqaTorchModel, ClassificationTorchModel, CaptioningTorchModel
 try:
-    is_worker = os.environ['celery_worker'] 
+    is_worker = os.environ['celery_worker']
+    print "ENV VARIABLE CELERY_WORKER IS ", os.environ['celery_worker']
+    # print os.environ['LD_LIBRARY_PATH'] 
     print "############## LOADING THE MODELS IN CELERY WORKER ################"
     from grad_cam.torch_models import ClassificationTorchModel, CaptioningTorchModel
     print "############## SUCCESSFULLY LOADED THE MODELS IN CELERY WORKER ################"
@@ -31,6 +33,10 @@ except Exception as e:
 # @shared_task
 @celery_app.task(ignore_result=True)
 def grad_cam_classification(image_path, label, output_dir):
+    try:
+        print os.environ['LD_LIBRARY_PATH']
+    except Exception as e:
+        print str(e)
     classification_task = ClassificationTorchModel.predict(image_path, label, output_dir)
     print classification_task
 

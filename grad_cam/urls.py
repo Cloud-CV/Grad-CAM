@@ -2,7 +2,7 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^vqa', 'grad_cam.views.vqa', name='vqa'),
+    # url(r'^vqa', 'grad_cam.views.vqa', name='vqa'),
     url(r'^upload', 'grad_cam.views.file_upload', name='upload'),
     url(r'^classification', 'grad_cam.views.classification', name='classification'),
     url(r'^captioning', 'grad_cam.views.captioning', name='captioning'),
