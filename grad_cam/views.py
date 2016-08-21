@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.conf import settings
 
 # from grad_cam.utils import grad_cam_vqa, grad_cam_classification, grad_cam_captioning
-from grad_cam.tasks import grad_cam_classification
+# from grad_cam.tasks import grad_cam_classification
+from grad_cam.sender import classification as classify_job
 
 import grad_cam.constants as constants
 import uuid
@@ -46,23 +47,25 @@ def vqa(request, template_name="vqa/vqa.html"):
 
 def classification(request, template_name="classification/classification.html"):
     if request.method == "POST":
-        try:
-            img_path = request.POST.get('img_path')
-            label = request.POST.get('label')
+        # try:
+        img_path = request.POST.get('img_path')
+        label = request.POST.get('label')
 
-            abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
-            out_dir = os.path.dirname(abs_image_path)
+        abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
+        out_dir = os.path.dirname(abs_image_path)
 
-            # Run the classification wrapper
-            response = grad_cam_classification.delay(str(abs_image_path), int(label), str(out_dir+"/"))
-            response['input_image'] = str(response['input_image']).replace(settings.BASE_DIR, '')
-            response['classify_gcam'] = str(response['classify_gcam']).replace(settings.BASE_DIR, '')
-            response['classify_gcam_raw'] = str(response['classify_gcam_raw']).replace(settings.BASE_DIR, '')
-            response['classify_gb'] = str(response['classify_gb']).replace(settings.BASE_DIR, '')
-            response['classify_gb_gcam'] = str(response['classify_gb_gcam']).replace(settings.BASE_DIR, '')
-            return JsonResponse(response)
-        except Exception as e:
-            return JsonResponse({"error": str(e)})
+        # Run the classification wrapper
+        print "Debug statement"
+        response = classify_job(str(abs_image_path), int(label), str(out_dir+"/"))
+        # response['input_image'] = str(response['input_image']).replace(settings.BASE_DIR, '')
+        # response['classify_gcam'] = str(response['classify_gcam']).replace(settings.BASE_DIR, '')
+        # response['classify_gcam_raw'] = str(response['classify_gcam_raw']).replace(settings.BASE_DIR, '')
+        # response['classify_gb'] = str(response['classify_gb']).replace(settings.BASE_DIR, '')
+        # response['classify_gb_gcam'] = str(response['classify_gb_gcam']).replace(settings.BASE_DIR, '')
+        return "Hello"
+        # except Exception as e:
+        #     print str(e)
+        #     return JsonResponse({"error": str(e)})
 
     demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
     return render(request, template_name, {"demo_images": demo_images})

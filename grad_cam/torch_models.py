@@ -39,12 +39,12 @@ ClassificationTorchModel = ClassificationModel(
 
 
 # Loading the Captioning model forever
-CaptioningModel = PyTorchHelpers.load_lua_class(constants.CAPTIONING_LUA_PATH, 'CaptioningTorchModel')
-CaptioningTorchModel = CaptioningModel(
-    constants.CAPTIONING_CONFIG['model_path'],
-    constants.CAPTIONING_CONFIG['backend'],
-    constants.CAPTIONING_CONFIG['input_sz'],
-    constants.CAPTIONING_CONFIG['layer'],
-    constants.CAPTIONING_CONFIG['seed'],
-    settings.GPUID,
-)
+# CaptioningModel = PyTorchHelpers.load_lua_class(constants.CAPTIONING_LUA_PATH, 'CaptioningTorchModel')
+# CaptioningTorchModel = CaptioningModel(
+#     constants.CAPTIONING_CONFIG['model_path'],
+#     constants.CAPTIONING_CONFIG['backend'],
+#     constants.CAPTIONING_CONFIG['input_sz'],
+#     constants.CAPTIONING_CONFIG['layer'],
+#     constants.CAPTIONING_CONFIG['seed'],
+#     settings.GPUID,
+# )
