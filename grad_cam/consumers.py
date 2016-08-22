@@ -7,6 +7,8 @@ def ws_connect(message):
 
 def ws_message(message):
     print "Message recieved from client side and the content is ", message.content['text']
+    # prefix, label = message['path'].strip('/').split('/')
     socketid = message.content['text']
-    Group(message.content['text']).add(message.reply_channel)
+    
+    Group(socketid).add(message.reply_channel)
     log_to_terminal(socketid, {"info": "User added to the Channel Group"})

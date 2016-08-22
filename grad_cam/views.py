@@ -11,22 +11,22 @@ import uuid
 import os
 import random
 import traceback
-
+import urllib2
 
 def home(request, template_name="index.html"):
     return render(request, template_name,)
 
 
 def vqa(request, template_name="vqa/vqa.html"):
+    socketid = uuid.uuid4()
     if request.method == "POST":
         # get the parameters from client side
         try:
-            socketid = request.POST.get('csrfmiddlewaretoken')
-            demo_type = request.POST.get("demo_type")
-
+            socketid = request.POST.get('socketid')
             input_question = request.POST.get('question', '')
             input_answer = request.POST.get('answer', None)
             img_path = request.POST.get('img_path')
+            img_path = urllib2.unquote(img_path)
 
             abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
             out_dir = os.path.dirname(abs_image_path)
@@ -38,15 +38,17 @@ def vqa(request, template_name="vqa/vqa.html"):
             log_to_terminal(socketid, {"terminal": traceback.print_exc()})
 
     demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
-    return render(request, template_name, {"demo_images": demo_images})
+    return render(request, template_name, {"demo_images": demo_images, 'socketid': socketid})
 
 
 def classification(request, template_name="classification/classification.html"):
+    socketid = uuid.uuid4()
     if request.method == "POST":
         try:
             img_path = request.POST.get('img_path')
+            img_path = urllib2.unquote(img_path)
             label = request.POST.get('label')
-            socketid = request.POST.get('csrfmiddlewaretoken')
+            socketid = request.POST.get('socketid')
 
             abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
             out_dir = os.path.dirname(abs_image_path)
@@ -57,15 +59,17 @@ def classification(request, template_name="classification/classification.html"):
         except Exception, err:
             log_to_terminal(socketid, {"terminal": traceback.print_exc()})
     demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
-    return render(request, template_name, {"demo_images": demo_images})
+    return render(request, template_name, {"demo_images": demo_images, 'socketid': socketid})
 
 
 def captioning(request, template_name="captioning/captioning.html"):
+    socketid = uuid.uuid4()
     if request.method == "POST":
         try:
             img_path = request.POST.get('img_path')
+            img_path = urllib2.unquote(img_path)
             caption = request.POST.get('caption', '')
-            socketid = request.POST.get('csrfmiddlewaretoken')
+            socketid = request.POST.get('socketid')
 
             abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
             out_dir = os.path.dirname(abs_image_path)
@@ -77,7 +81,7 @@ def captioning(request, template_name="captioning/captioning.html"):
             log_to_terminal(socketid, {"terminal": traceback.print_exc()})
 
     demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
-    return render(request, template_name, {"demo_images": demo_images})
+    return render(request, template_name, {"demo_images": demo_images, 'socketid': socketid})
 
 
 def file_upload(request):

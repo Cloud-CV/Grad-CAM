@@ -131,7 +131,7 @@
          <div class="row hiddenDiv demoImages" id="demoImages1">
             <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000003501.jpg "
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000033270.jpg"
+            <img src="/media/grad_cam/demo_vqa/firehydrant.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
             <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000237618.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
@@ -200,7 +200,7 @@
 
 {% block result %}
 
-{% endblock%}
+{% endblock %}
 
 {% block credits %}
 
@@ -244,55 +244,6 @@
             }
         }
     };
-
-  $(document).ready(function(){
-    var host = location.origin;
-  //   var socket = io.connect(host,{transports: ["websocket"]});
-
-  //   socket.on('connect', function(){
-  //       console.log("connect");
-  //   });
-
-  //   $('.demo_img').each(function(){
-  //       var width = $(this).width();
-  //       console.log(width);
-  //       $(this).css("height", width * 0.7);
-  //   });
-
-  //   $(window).on('resize', function(){
-  //   $('.demo_img').each(function(){
-  //       var width = $(this).width();
-  //       console.log(width);
-  //       $(this).css("height", width * 0.7);
-  //   });
-  // });
-
-  // socket.on('message', function(message)
-  // {
-  //     if(message.socketid)
-  //     {
-  //         console.log("socketid recieved: " + message.socketid);
-  //         document.getElementById('socketid').value= message.socketid.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  //         socketid = document.getElementById('socketid').value
-  //     }
-  //     if(message.visit)
-  //     {
-  //         $('#statcounter').append('<p>' + message.visit );
-  //         console.log(message.visit);
-  //     }
-  //     if(message.name)
-  //     {
-  //         console.log(message.name);
-  //         $('#comments').prepend('<li>' + message.name + '</li>');
-  //     }
-  //     if(message.web_result)
-  //     {
-  //         webResult = JSON.parse(message.web_result);
-  //         console.log(webResult);
-  //         processResult(webResult);
-  //     }
-  // });
-});
 
 </script>
 

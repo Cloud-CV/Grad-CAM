@@ -51,8 +51,9 @@ def callback(ch, method, properties, body):
     result['vqa_gb'] = str(result['vqa_gb']).replace(settings.BASE_DIR, '')
     result['vqa_gb_gcam'] = str(result['vqa_gb_gcam']).replace(settings.BASE_DIR, '')
 
-    log_to_terminal(body['socketid'], {"terminal": "Completed the Classification Task"})
+    log_to_terminal(body['socketid'], {"terminal": json.dumps(result)})
     log_to_terminal(body['socketid'], {"result": json.dumps(result)})
+    log_to_terminal(body['socketid'], {"terminal": "Completed the Grad-CAM VQA task"})
 
     ch.basic_ack(delivery_tag = method.delivery_tag)
 

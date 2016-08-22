@@ -139,9 +139,6 @@ mix-blend-mode: multiply;
 
 {% endblock %}
 
-{% block terminal %}
-{% endblock %}
-
 {% block result %}
 <script type="text/javascript">
   // Overriden 
@@ -161,6 +158,9 @@ mix-blend-mode: multiply;
         $("#demoType").val("uploadedImageType");
         $("#question").val("");
         $("#Caption").val("");
+        $('#comments').prepend('<br>');
+        $('#comments').prepend('<li>' + "Image uploaded successfully..." + '</li>');
+        scrollToElement($("#termstart"));
         scrollToElement($("#ResultDiv"));
       });
     }
@@ -175,8 +175,8 @@ $(document).ready(function(){
   var socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
 
   socket.onopen = function() {
-      console.log("User connected to the socket with socketid "+ "{{csrf_token}}");
-      socket.send("{{ csrf_token}}");
+      console.log("User connected to the socket with socketid "+ "{{socketid }}");
+      socket.send("{{ socketid }}");
   }
 
   socket.onmessage = function(response) {
@@ -187,6 +187,11 @@ $(document).ready(function(){
 
     if ("info" in response){
       console.log("Info is there as the key");
+    }
+
+    if ("terminal" in response){
+
+      $('#comments').prepend('<li>' + response['terminal'] + '</li>');
     }
 
     if("result" in response){
@@ -201,8 +206,8 @@ $(document).ready(function(){
       $("#img3").attr("src",result['captioning_gb_gcam']+"?"+d.getTime());
       $("#show-grad-cam-result").show();
       scrollToElement($("#show-grad-cam-result"));
+      $('#comments').prepend('<br>');
     }
-
   }
 });
 
@@ -218,6 +223,9 @@ function submitDemoImage(src){
   $("#show-grad-cam-result").hide();
   $("#Caption").val("");
   $("#ResultDiv").show();
+  scrollToElement($("#termstart"));
+  $('#comments').prepend('<br>');
+  $('#comments').prepend('<li>' + "Submitted demo image" + '</li>');
   scrollToElement($("#ResultDiv"));
 }
 
@@ -229,7 +237,7 @@ function submitImageForCaptioning () {
   $.ajax({
     type    : 'POST', // define the type of HTTP verb we want to use (POST for our form)
     url     : '{% url 'captioning' %}', // the url where we want to POST
-    data    : { 'img_path': img_path, 'csrfmiddlewaretoken': "{{ csrf_token }}", 'caption': caption} // our data object
+    data    : { 'img_path': img_path, 'csrfmiddlewaretoken': "{{ csrf_token }}", 'caption': caption, 'socketid': "{{ socketid }}"} // our data object
   })// using the done promise callback
   .done(function(response) {
     console.log("Ajax call completed successfully");

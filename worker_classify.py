@@ -48,8 +48,9 @@ def callback(ch, method, properties, body):
     print result
 
     log_to_terminal("Hello", {"terminal": "Completed the Classification Task"})
-    log_to_terminal(body['socketid'], {"terminal": "Completed the Classification Task"})
+    log_to_terminal(body['socketid'], {"terminal": json.dumps(result)})
     log_to_terminal(body['socketid'], {"result": json.dumps(result)})
+    log_to_terminal(body['socketid'], {"terminal": "Completed the Classification Task"})
 
     ch.basic_ack(delivery_tag = method.delivery_tag)
 

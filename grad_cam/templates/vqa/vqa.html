@@ -75,8 +75,6 @@ mix-blend-mode: multiply;
 
 {% endblock %}
 
-{% block terminal %}
-{% endblock %}
 
 {% block result %}
 
@@ -1110,7 +1108,10 @@ var answers = {
         $("#demoType").val("uploadedImageType");
         $("#question").val("");
         $("#answer").val("");
-        scrollToElement($("#resultHeading"));
+        scrollToElement($("#termstart"));
+        $('#comments').prepend('<br>');
+        $('#comments').prepend('<li>' + "Image uploaded successfully..." + '</li>');
+
       });
     }
   }
@@ -1124,8 +1125,8 @@ $(document).ready(function(){
   var socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
 
   socket.onopen = function() {
-      console.log("User connected to the socket with socketid "+ "{{csrf_token}}");
-      socket.send("{{ csrf_token}}");
+      console.log("User connected to the socket with socketid "+ "{{socketid}}");
+      socket.send("{{ socketid }}");
   }
 
   socket.onmessage = function(response) {
@@ -1136,6 +1137,10 @@ $(document).ready(function(){
 
     if ("info" in response){
       console.log("Info is there as the key");
+    }
+
+    if ("terminal" in response) {
+      $('#comments').prepend('<li>' + response['terminal'] + '</li>');
     }
 
     if("result" in response){
@@ -1170,6 +1175,9 @@ function submitDemoImage(src){
   var img_path = getLocation(src).pathname;
   $("#inputImageAfterUpload").attr('src', img_path);
   $("#ResultDiv").show();
+  $('#comments').prepend('<br>');
+  $('#comments').prepend('<li>' + "Submitted demo image" + '</li>');
+  scrollToElement($("#termstart"));
   scrollToElement($("#resultHeading"));
 }
 
@@ -1184,7 +1192,7 @@ function submitImageForVqa () {
   $.ajax({
     type    : 'POST', // define the type of HTTP verb we want to use (POST for our form)
     url     : '{% url 'vqa' %}', // the url where we want to POST
-    data    : { 'img_path': img_path, 'csrfmiddlewaretoken': '{{ csrf_token }}', 'question': question, 'answer': answer, 'demo_type': demo_type} // our data object
+    data    : { 'img_path': img_path, 'csrfmiddlewaretoken': '{{ csrf_token }}', 'question': question, 'answer': answer, 'socketid': "{{socketid}}"} // our data object
   })// using the done promise callback
   .done(function(response) {
     console.log("Ajax call completed successfully.")

@@ -44,8 +44,9 @@ def callback(ch, method, properties, body):
     result['captioning_gb'] = str(result['captioning_gb']).replace(settings.BASE_DIR, '')
     result['captioning_gb_gcam'] = str(result['captioning_gb_gcam']).replace(settings.BASE_DIR, '')
 
-    log_to_terminal(body['socketid'], {"terminal": "Completed the Captioning job"})
     log_to_terminal(body['socketid'], {"result": json.dumps(result)})
+    log_to_terminal(body['socketid'], {"terminal": json.dumps(result)})
+    log_to_terminal(body['socketid'], {"terminal": "Completed the Captioning job"})
 
     ch.basic_ack(delivery_tag = method.delivery_tag)
 
