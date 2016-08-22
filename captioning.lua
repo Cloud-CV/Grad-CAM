@@ -8,17 +8,12 @@ local preprocess = utils.preprocess
 local TorchModel = torch.class('CaptioningTorchModel')
 
 function TorchModel:__init(model_path, backend, input_sz, layer, seed, gpuid)
-
   self.model_path = model_path
   self.backend = backend
   self.input_sz = input_sz
   self.layer = layer
   self.seed = seed
   self.gpuid = gpuid
-  self:loadModel(model_path)
-
-  torch.manualSeed(self.seed)
-  torch.setdefaulttensortype('torch.FloatTensor')
 
   if self.gpuid >= 0 then
     require 'cunn'
@@ -27,6 +22,11 @@ function TorchModel:__init(model_path, backend, input_sz, layer, seed, gpuid)
     cutorch.setDevice(self.gpuid + 1)
     cutorch.manualSeed(self.seed)
   end
+  
+  self:loadModel(model_path)
+  torch.manualSeed(self.seed)
+  torch.setdefaulttensortype('torch.FloatTensor')
+
 
   -- neuraltalk2-specific dependencies
   -- https://github.com/karpathy/neuraltalk2
