@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'grad_cam',
+    'channels',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,3 +88,13 @@ GPUID = 0
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL= "/media/"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+        "ROUTING": "grad_cam.routing.channel_routing",
+    },
+}
