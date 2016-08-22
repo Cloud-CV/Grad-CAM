@@ -1,17 +1,14 @@
 from __future__ import absolute_import
-
 import os
-import pika
-import time
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'demo.settings')
 
-from django.conf import settings  # noqa
+from django.conf import settings
 
 import grad_cam.constants as constants
 import PyTorch
 import PyTorchHelpers
-import json
+import pika
+import time
 import yaml
 
 ClassificationModel = PyTorchHelpers.load_lua_class(constants.CLASSIFICATION_LUA_PATH, 'ClassificationTorchModel')
@@ -36,9 +33,20 @@ print(' [*] Waiting for messages. To exit press CTRL+C')
 def callback(ch, method, properties, body):
     print(" [x] Received %r" % body)
     body = yaml.safe_load(body) # using yaml instead of json.loads since that unicodes the string in value
-    classification_task = ClassificationTorchModel.predict(body['image_path'], body['label'], body['output_dir'])
-    print classification_task
-    print(" [x] Done")
+
+    response = ClassificationTorchModel.predict(body['image_path'], body['label'], body['output_dir'])
+
+    response['input_image'] = str(response['input_image']).replace(settings.BASE_DIR, '')
+    response['classify_gcam'] = str(response['classify_gcam']).replace(settings.BASE_DIR, '')
+    response['classify_gcam_raw'] = str(response['classify_gcam_raw']).replace(settings.BASE_DIR, '')
+    response['classify_gb'] = str(response['classify_gb']).replace(settings.BASE_DIR, '')
+    response['classify_gb_gcam'] = str(response['classify_gb_gcam']).replace(settings.BASE_DIR, '')
+
+    print response
+
+    log_to_terminal(body['socketid'], {"terminal": "Completed the Classification Task"})
+    log_to_terminal(body['socketid'], {"result": classification_result})
+
     ch.basic_ack(delivery_tag = method.delivery_tag)
 
 channel.basic_consume(callback,
