@@ -57,3 +57,28 @@ def grad_cam_vqa(input_question, input_answer, image_path, out_dir, socketid):
     print(" [x] Sent %r" % message)
     log_to_terminal(socketid, {"terminal": "Job published successfully"})
     connection.close()
+
+
+def grad_cam_captioning(image_path, caption, out_dir, socketid):
+    connection = pika.BlockingConnection(pika.ConnectionParameters(
+            host='localhost'))
+    channel = connection.channel()
+
+    channel.queue_declare(queue='captioning_task_queue', durable=True)
+    message = {
+        'image_path': image_path,
+        'caption': caption,
+        'output_dir': out_dir,
+        'socketid': socketid,
+    }
+    log_to_terminal(socketid, {"terminal": "Publishing job to Captioning Queue"})
+    channel.basic_publish(exchange='',
+                      routing_key='captioning_task_queue',
+                      body=json.dumps(message),
+                      properties=pika.BasicProperties(
+                         delivery_mode = 2, # make message persistent
+                      ))
+
+    print(" [x] Sent %r" % message)
+    log_to_terminal(socketid, {"terminal": "Job published successfully"})
+    connection.close()

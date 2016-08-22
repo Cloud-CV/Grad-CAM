@@ -168,6 +168,44 @@ mix-blend-mode: multiply;
 </script>
 
 <script type="text/javascript">
+
+
+$(document).ready(function(){
+  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+  var socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
+
+  socket.onopen = function() {
+      console.log("User connected to the socket with socketid "+ "{{csrf_token}}");
+      socket.send("{{ csrf_token}}");
+  }
+
+  socket.onmessage = function(response) {
+    console.log("Getting response from the worker.....");
+    console.log(JSON.parse(response.data));
+
+    response = JSON.parse(response.data);
+
+    if ("info" in response){
+      console.log("Info is there as the key");
+    }
+
+    if("result" in response){
+
+      result = JSON.parse(response['result']);
+      var d = new Date();
+      $("#inputCaption").text(result['input_caption']);
+      $("#predictedCaption").text(result['pred_caption']);
+      $("#overImg1").attr("src", result['input_image']);
+      $("#img1").attr("src",result['captioning_gcam_raw']+"?"+d.getTime());
+      $("#img2").attr("src",result['captioning_gb']+"?"+d.getTime());
+      $("#img3").attr("src",result['captioning_gb_gcam']+"?"+d.getTime());
+      $("#show-grad-cam-result").show();
+      scrollToElement($("#show-grad-cam-result"));
+    }
+
+  }
+});
+
   var getLocation = function(href) {
       var l = document.createElement("a");
       l.href = href;
@@ -194,16 +232,7 @@ function submitImageForCaptioning () {
     data    : { 'img_path': img_path, 'csrfmiddlewaretoken': "{{ csrf_token }}", 'caption': caption} // our data object
   })// using the done promise callback
   .done(function(response) {
-    var d = new Date();
-    console.log(response);
-    $("#inputCaption").text(response['input_caption']);
-    $("#predictedCaption").text(response['pred_caption']);
-    $("#overImg1").attr("src", response['input_image']);
-    $("#img1").attr("src",response['captioning_gcam_raw']+"?"+d.getTime());
-    $("#img2").attr("src",response['captioning_gb']+"?"+d.getTime());
-    $("#img3").attr("src",response['captioning_gb_gcam']+"?"+d.getTime());
-    $("#show-grad-cam-result").show();
-    scrollToElement($("#show-grad-cam-result"));
+    console.log("Ajax call completed successfully");
   });
 }
 </script>
@@ -261,7 +290,7 @@ function submitImageForCaptioning () {
   </font>
   <br>
 </div>
-{% endblock %}
 </body>
-
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
 </html>
+{% endblock %}

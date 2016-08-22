@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from channels import Group
 
-from grad_cam.sender import grad_cam_classification, grad_cam_vqa
+from grad_cam.sender import grad_cam_classification, grad_cam_vqa, grad_cam_captioning
 from grad_cam.utils import log_to_terminal
 
 import grad_cam.constants as constants
@@ -65,20 +65,16 @@ def captioning(request, template_name="captioning/captioning.html"):
         try:
             img_path = request.POST.get('img_path')
             caption = request.POST.get('caption', '')
+            socketid = request.POST.get('csrfmiddlewaretoken')
 
             abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
             out_dir = os.path.dirname(abs_image_path)
 
             # Run the captioning wrapper
-            response = grad_cam_captioning(str(abs_image_path), str(caption), str(out_dir+"/"))
-            response['input_image'] = str(response['input_image']).replace(settings.BASE_DIR, '')
-            response['captioning_gcam'] = str(response['captioning_gcam']).replace(settings.BASE_DIR, '')
-            response['captioning_gcam_raw'] = str(response['captioning_gcam_raw']).replace(settings.BASE_DIR, '')
-            response['captioning_gb'] = str(response['captioning_gb']).replace(settings.BASE_DIR, '')
-            response['captioning_gb_gcam'] = str(response['captioning_gb_gcam']).replace(settings.BASE_DIR, '')
-            return JsonResponse(response)
-        except Exception as e:
-            return JsonResponse({"error": str(e)})
+            log_to_terminal(socketid, {"terminal": "Starting Captioning job..."})
+            response = grad_cam_captioning(str(abs_image_path), str(caption), str(out_dir+"/"), socketid)
+        except Exception, err:
+            log_to_terminal(socketid, {"terminal": traceback.print_exc()})
 
     demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
     return render(request, template_name, {"demo_images": demo_images})
