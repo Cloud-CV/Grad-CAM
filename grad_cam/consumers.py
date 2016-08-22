@@ -1,9 +1,5 @@
-from django.http import HttpResponse
-from channels.handler import AsgiHandler
-from grad_cam.sender import classification
 from channels import Group
 from grad_cam.utils import log_to_terminal
-import json
 
 def ws_connect(message):
     print "User connnected via Socket"

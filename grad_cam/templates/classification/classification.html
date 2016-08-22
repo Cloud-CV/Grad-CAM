@@ -171,37 +171,9 @@ function submitDemoImage(src){
   scrollToElement($("#ResultDiv"));
 }
 
-$(document).ready(function(){
-  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-  var socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
-
-  socket.onopen = function() {
-      console.log("User connected to the socket with socketid "+ "{{csrf_token}}");
-      socket.send("{{ csrf_token}}");
-  }
-
-  socket.onmessage = function(response) {
-    console.log("Getting response from the worker.....");
-    console.log(JSON.parse(response.data));
-
-    if (response.data.hasOwnProperty('result')){
-      $("#inputLabel").text(labels[response['label']]);
-      $("#predictedLabel").text(labels[response['pred_label']]);
-      $("#overImg1").attr("src", response['input_image']);
-
-      var d = new Date();
-      $("#img1").attr("src",response['classify_gcam_raw']+"?"+d.getTime());
-      $("#img2").attr("src",response['classify_gb']+"?"+d.getTime());
-      $("#img3").attr("src",response['classify_gb_gcam']+"?"+d.getTime());
-      $("#show-grad-cam-result").show();
-      scrollToElement($("#show-grad-cam-result"));
-    }
-  }
-
-});
+var label = $("#label").val();
 
 function submitImageForClassification () {
-  var label = $("#label").val();
   var label_id = null;
   $.each(labels, function(index, value) {
         if(value == label){
@@ -228,6 +200,51 @@ function submitImageForClassification () {
     console.log("Ajax call completes");
   });
 }
+
+$(document).ready(function(){
+  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+  var socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
+
+  socket.onopen = function() {
+      console.log("User connected to the socket with socketid "+ "{{csrf_token}}");
+      socket.send("{{ csrf_token}}");
+  }
+
+  socket.onmessage = function(response) {
+    console.log("Getting response from the worker.....");
+    console.log(JSON.parse(response.data));
+
+    response = JSON.parse(response.data);
+
+    if ("info" in response){
+      console.log("Info is there as the key");
+    }
+
+    if("result" in response){
+
+      result = JSON.parse(response['result']);
+      console.log(result);
+
+      console.log(result['classify_gcam_raw']);
+      console.log(result['classify_gb']);
+      console.log(result['classify_gb_gcam']);
+      console.log("Result key exists");
+
+      $("#inputLabel").text(labels[result['label']]);
+      $("#predictedLabel").text(labels[result['pred_label']]);
+      $("#overImg1").attr("src", result['input_image']);
+
+      var d = new Date();
+      $("#img1").attr("src",result['classify_gcam_raw']+"?"+d.getTime());
+      $("#img2").attr("src",result['classify_gb']+"?"+d.getTime());
+      $("#img3").attr("src",result['classify_gb_gcam']+"?"+d.getTime());
+      $("#show-grad-cam-result").show();
+      scrollToElement($("#show-grad-cam-result"));
+    }
+  }
+
+});
+
 </script>
 
 <script type="text/javascript">

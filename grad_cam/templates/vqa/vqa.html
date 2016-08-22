@@ -1117,6 +1117,45 @@ var answers = {
 </script>
 
 <script type="text/javascript">
+
+
+$(document).ready(function(){
+  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+  var socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
+
+  socket.onopen = function() {
+      console.log("User connected to the socket with socketid "+ "{{csrf_token}}");
+      socket.send("{{ csrf_token}}");
+  }
+
+  socket.onmessage = function(response) {
+    console.log("Getting response from the worker.....");
+    console.log(JSON.parse(response.data));
+
+    response = JSON.parse(response.data);
+
+    if ("info" in response){
+      console.log("Info is there as the key");
+    }
+
+    if("result" in response){
+
+      result = JSON.parse(response['result']);
+      console.log(result);
+      var d = new Date();
+      $("#overImg1").attr("src", result['input_image']);
+      $("#img1").attr("src",result['vqa_gcam_raw']+"?"+d.getTime());
+      $("#img2").attr("src",result['vqa_gb']+"?"+d.getTime());
+      $("#img3").attr("src",result['vqa_gb_gcam']+"?"+d.getTime());
+      $("#predictedAnswer").text(result['answer']);
+      $("#inputAnswer").text(result['input_answer']);
+      $("#show-grad-cam-result").show();
+      scrollToElement($("#show-grad-cam-result"));
+    }
+
+  }
+});
+
   var getLocation = function(href) {
       var l = document.createElement("a");
       l.href = href;
@@ -1148,20 +1187,9 @@ function submitImageForVqa () {
     data    : { 'img_path': img_path, 'csrfmiddlewaretoken': '{{ csrf_token }}', 'question': question, 'answer': answer, 'demo_type': demo_type} // our data object
   })// using the done promise callback
   .done(function(response) {
-    console.log(response);
-    var d = new Date();
-    $("#overImg1").attr("src", response['input_image']);
-    $("#img1").attr("src",response['vqa_gcam_raw']+"?"+d.getTime());
-    $("#img2").attr("src",response['vqa_gb']+"?"+d.getTime());
-    $("#img3").attr("src",response['vqa_gb_gcam']+"?"+d.getTime());
-    $("#predictedAnswer").text(response['answer']);
-    $("#inputAnswer").text(response['input_answer']);
-    $("#show-grad-cam-result").show();
-    scrollToElement($("#show-grad-cam-result"));
-
+    console.log("Ajax call completed successfully.")
   });
 }
-
 
 </script>
 <br>
@@ -1219,8 +1247,7 @@ function submitImageForVqa () {
 <br>
   </div>
 
-{% endblock %}
 </body>
-
-
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
 </html>
+{% endblock %}

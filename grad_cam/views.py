@@ -3,13 +3,15 @@ from django.http import JsonResponse
 from django.conf import settings
 from channels import Group
 
-from grad_cam.sender import classification as classify_job
+from grad_cam.sender import grad_cam_classification, grad_cam_vqa
 from grad_cam.utils import log_to_terminal
 
 import grad_cam.constants as constants
 import uuid
 import os
 import random
+import traceback
+
 
 def home(request, template_name="index.html"):
     return render(request, template_name,)
@@ -19,26 +21,21 @@ def vqa(request, template_name="vqa/vqa.html"):
     if request.method == "POST":
         # get the parameters from client side
         try:
+            socketid = request.POST.get('csrfmiddlewaretoken')
             demo_type = request.POST.get("demo_type")
 
-            # Deprecated code. Remove it after demo.
             input_question = request.POST.get('question', '')
             input_answer = request.POST.get('answer', None)
             img_path = request.POST.get('img_path')
-            # handle image upload
+
             abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
             out_dir = os.path.dirname(abs_image_path)
 
             # Run the VQA wrapper
-            response = grad_cam_vqa(str(input_question), str(input_answer), str(abs_image_path), str(out_dir+"/"))
-            response['input_image'] = str(response['input_image']).replace(settings.BASE_DIR, '')
-            response['vqa_gcam'] = str(response['vqa_gcam']).replace(settings.BASE_DIR, '')
-            response['vqa_gcam_raw'] = str(response['vqa_gcam_raw']).replace(settings.BASE_DIR, '')
-            response['vqa_gb'] = str(response['vqa_gb']).replace(settings.BASE_DIR, '')
-            response['vqa_gb_gcam'] = str(response['vqa_gb_gcam']).replace(settings.BASE_DIR, '')
-            return JsonResponse(response)
-        except Exception as e:
-            return JsonResponse({"error": str(e)})
+            log_to_terminal(socketid, {"terminal": "Starting Visual Question Answering job..."})
+            response = grad_cam_vqa(str(input_question), str(input_answer), str(abs_image_path), str(out_dir+"/"), socketid)
+        except Exception, err:
+            log_to_terminal(socketid, {"terminal": traceback.print_exc()})
 
     demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
     return render(request, template_name, {"demo_images": demo_images})
@@ -55,14 +52,10 @@ def classification(request, template_name="classification/classification.html"):
             out_dir = os.path.dirname(abs_image_path)
 
             # Run the classification wrapper
-            print "Debug statement"
-            print "abs_image_path", abs_image_path
-            print "out_dir", out_dir
             log_to_terminal(socketid, {"terminal": "Starting classification job on VGG_ILSVRC_16_layers.caffemodel"})
-            response = classify_job(str(abs_image_path), int(label), str(out_dir+"/"), socketid)
-        except Exception as e:
-            print str(e)
-            return JsonResponse({"error": str(e)})
+            response = grad_cam_classification(str(abs_image_path), int(label), str(out_dir+"/"), socketid)
+        except Exception, err:
+            log_to_terminal(socketid, {"terminal": traceback.print_exc()})
     demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
     return render(request, template_name, {"demo_images": demo_images})
 
