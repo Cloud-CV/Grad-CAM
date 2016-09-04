@@ -1093,13 +1093,13 @@ var answers = {
 
   // Overriden 
   Dropzone.options.myDropzone = {
-    autoProcessQueue: true,
     uploadMultiple: false,
+    autoProcessQueue: true,
     maxFiles: 10,
 
     init: function() {
       var myDropzone = this;
-
+      this.hiddenFileInput.removeAttribute('multiple');
       myDropzone.on('success', function(file, data){
         console.log(data);
         $("#inputImageAfterUpload").attr('src', data['file_path']);
@@ -1111,7 +1111,7 @@ var answers = {
         scrollToElement($("#termstart"));
         $('#comments').prepend('<br>');
         $('#comments').prepend('<li>' + "Image uploaded successfully..." + '</li>');
-
+        scrollToElement($("#resultHeading"));
       });
     }
   }
