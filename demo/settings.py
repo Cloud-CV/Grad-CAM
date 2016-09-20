@@ -85,7 +85,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-GPUID = 0
+GPUID = -1
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

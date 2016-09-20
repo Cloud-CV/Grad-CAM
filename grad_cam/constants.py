@@ -1,9 +1,7 @@
 from django.conf import settings
 import os
 
-GRAD_CAM_DEMO_IMAGES_PATH = os.path.join(settings.BASE_DIR, 'media', 'grad_cam', 'demo')
-
-COCO_IMAGES_PATH = os.path.join(settings.MEDIA_URL, 'grad_cam', 'demo')
+COCO_IMAGES_PATH = os.path.join(settings.MEDIA_URL, 'coco', 'val2014')
 
 VQA_CONFIG = {
     'proto_file': 'models/VGG_ILSVRC_19_layers_deploy.prototxt',

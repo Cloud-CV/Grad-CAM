@@ -37,7 +37,7 @@ def vqa(request, template_name="vqa/vqa.html"):
         except Exception, err:
             log_to_terminal(socketid, {"terminal": traceback.print_exc()})
 
-    demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
+    demo_images = get_demo_images(constants.COCO_IMAGES_PATH)
     return render(request, template_name, {"demo_images": demo_images, 'socketid': socketid})
 
 
@@ -58,7 +58,7 @@ def classification(request, template_name="classification/classification.html"):
             response = grad_cam_classification(str(abs_image_path), int(label), str(out_dir+"/"), socketid)
         except Exception, err:
             log_to_terminal(socketid, {"terminal": traceback.print_exc()})
-    demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
+    demo_images = get_demo_images(constants.COCO_IMAGES_PATH)
     return render(request, template_name, {"demo_images": demo_images, 'socketid': socketid})
 
 
@@ -80,7 +80,7 @@ def captioning(request, template_name="captioning/captioning.html"):
         except Exception, err:
             log_to_terminal(socketid, {"terminal": traceback.print_exc()})
 
-    demo_images = get_demo_images(constants.GRAD_CAM_DEMO_IMAGES_PATH)
+    demo_images = get_demo_images(constants.COCO_IMAGES_PATH)
     return render(request, template_name, {"demo_images": demo_images, 'socketid': socketid})
 
 
