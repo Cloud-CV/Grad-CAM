@@ -21,7 +21,7 @@ ClassificationTorchModel = ClassificationModel(
     constants.CLASSIFICATION_CONFIG['input_sz'],
     constants.CLASSIFICATION_CONFIG['layer_name'],
     constants.CLASSIFICATION_CONFIG['seed'],
-    settings.GPUID,
+    constants.CLASSIFICATION_GPUID,
 )
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(
@@ -33,26 +33,28 @@ channel.queue_declare(queue='classify_task_queue', durable=True)
 print(' [*] Waiting for messages. To exit press CTRL+C')
 
 def callback(ch, method, properties, body):
+    try:
+        print(" [x] Received %r" % body)
+        body = yaml.safe_load(body) # using yaml instead of json.loads since that unicodes the string in value
 
-    print(" [x] Received %r" % body)
-    body = yaml.safe_load(body) # using yaml instead of json.loads since that unicodes the string in value
+        result = ClassificationTorchModel.predict(body['image_path'], body['label'], body['output_dir'])
 
-    result = ClassificationTorchModel.predict(body['image_path'], body['label'], body['output_dir'])
+        result['input_image'] = str(result['input_image']).replace(settings.BASE_DIR, '')
+        result['classify_gcam'] = str(result['classify_gcam']).replace(settings.BASE_DIR, '')
+        result['classify_gcam_raw'] = str(result['classify_gcam_raw']).replace(settings.BASE_DIR, '')
+        result['classify_gb'] = str(result['classify_gb']).replace(settings.BASE_DIR, '')
+        result['classify_gb_gcam'] = str(result['classify_gb_gcam']).replace(settings.BASE_DIR, '')
 
-    result['input_image'] = str(result['input_image']).replace(settings.BASE_DIR, '')
-    result['classify_gcam'] = str(result['classify_gcam']).replace(settings.BASE_DIR, '')
-    result['classify_gcam_raw'] = str(result['classify_gcam_raw']).replace(settings.BASE_DIR, '')
-    result['classify_gb'] = str(result['classify_gb']).replace(settings.BASE_DIR, '')
-    result['classify_gb_gcam'] = str(result['classify_gb_gcam']).replace(settings.BASE_DIR, '')
+        print result
 
-    print result
+        log_to_terminal("Hello", {"terminal": "Completed the Classification Task"})
+        log_to_terminal(body['socketid'], {"terminal": json.dumps(result)})
+        log_to_terminal(body['socketid'], {"result": json.dumps(result)})
+        log_to_terminal(body['socketid'], {"terminal": "Completed the Classification Task"})
 
-    log_to_terminal("Hello", {"terminal": "Completed the Classification Task"})
-    log_to_terminal(body['socketid'], {"terminal": json.dumps(result)})
-    log_to_terminal(body['socketid'], {"result": json.dumps(result)})
-    log_to_terminal(body['socketid'], {"terminal": "Completed the Classification Task"})
-
-    ch.basic_ack(delivery_tag = method.delivery_tag)
+        ch.basic_ack(delivery_tag = method.delivery_tag)
+    except:
+        log_to_terminal(body['socketid'], {"terminal": json.dumps({"Error": "Some error occured. Please try later"})})
 
 channel.basic_consume(callback,
                       queue='classify_task_queue')
