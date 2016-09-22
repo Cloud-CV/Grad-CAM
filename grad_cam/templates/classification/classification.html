@@ -2,7 +2,7 @@
 
 {% block header_content %}
 
-<a href="https://github.com/DESHRAJ/grad-cam" target="_blank"><img style="position: fixed; top: 0; right: 0; border: 0; z-index:2000;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+<a href="https://github.com/Cloud-CV/Grad-CAM" target="_blank"><img style="position: fixed; top: 0; right: 0; border: 0; z-index:2000;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
 
 <div class="container">
     <div class="page-header">
@@ -35,19 +35,19 @@
             </div>
         </div>
          <div class="row hiddenDiv demoImages" id="demoImages1">
-            <img src="/media/grad_cam/demo_classification/COCO_train2014_000000114269.jpg"
+            <img src="/media/demo_classification/COCO_train2014_000000114269.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src="/media/grad_cam/demo_classification/COCO_train2014_000000125586.jpg"
+            <img src="/media/demo_classification/COCO_train2014_000000125586.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src="/media/grad_cam/demo_classification/COCO_train2014_000000527338.jpg"
+            <img src="/media/demo_classification/COCO_train2014_000000527338.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
          </div>
          <div class="row hiddenDiv demoImages" id="demoImages2">
-            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000184402.jpg"
+            <img src="/media/demo_vqa/COCO_val2014_000000184402.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000393056.jpg"
+            <img src="/media/demo_vqa/COCO_val2014_000000393056.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000240731.jpg"
+            <img src="/media/demo_vqa/COCO_val2014_000000240731.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
             <br>
          </div>
@@ -149,9 +149,7 @@ $(document).ready(function(){
   $( "#label" ).autocomplete({
     source: arr
   });
-
 });
-
 
 var getLocation = function(href) {
     var l = document.createElement("a");
@@ -203,11 +201,11 @@ function submitImageForClassification () {
 
 $(document).ready(function(){
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-  var socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
-
+  var socket = new WebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
+  console.log(socket);
   socket.onopen = function() {
+      this.send("{{ socketid}}");
       console.log("User connected to the socket with socketid "+ "{{socketid}}");
-      socket.send("{{ socketid}}");
   }
 
   socket.onmessage = function(response) {
