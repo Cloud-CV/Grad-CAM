@@ -9,3 +9,5 @@ asgi-redis==0.14.1
 pika==0.10.0
 pyyaml==3.12
 uwsgi==2.0.13.1
+websocket-client==0.37.0
+daphne==0.15.0
