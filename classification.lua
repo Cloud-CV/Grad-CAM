@@ -24,7 +24,7 @@ function TorchModel:__init(proto_file, model_file, backend, input_sz, layer_name
   if gpuid >= 0 then
     require 'cunn'
     require 'cutorch'
-    cutorch.setDevice(gpuid + 1)
+    cutorch.setDevice(1)
     cutorch.manualSeed(seed)
   end
 

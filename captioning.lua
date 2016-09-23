@@ -19,7 +19,7 @@ function TorchModel:__init(model_path, backend, input_sz, layer, seed, gpuid)
     require 'cunn'
     require 'cudnn'
     require 'cutorch'
-    cutorch.setDevice(self.gpuid + 1)
+    cutorch.setDevice(1)
     cutorch.manualSeed(self.seed)
   end
   
@@ -70,7 +70,7 @@ end
 
 
 function TorchModel:predict(input_image_path, input_sz, input_sz, input_caption, out_path)
-
+  print(input_image_path)
   local img = utils.preprocess(input_image_path, input_sz, input_sz)
 
   -- Clone & replace ReLUs for Guided Backprop
