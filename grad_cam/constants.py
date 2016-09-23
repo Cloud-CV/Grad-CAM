@@ -3,7 +3,7 @@ import os
 
 COCO_IMAGES_PATH = os.path.join(settings.MEDIA_ROOT, 'coco', 'val2014')
 
-VQA_GPUID = -1
+VQA_GPUID = 0
 
 VQA_CONFIG = {
     'proto_file': 'models/VGG_ILSVRC_19_layers_deploy.prototxt',
@@ -29,7 +29,7 @@ else:
 
 VQA_LUA_PATH = "visual_question_answering.lua"
 
-CLASSIFICATION_GPUID = 0
+CLASSIFICATION_GPUID = 1
 
 CLASSIFICATION_CONFIG = {
     'proto_file': 'models/VGG_ILSVRC_16_layers_deploy.prototxt',
@@ -49,7 +49,7 @@ if CLASSIFICATION_GPUID == -1:
 else:
     CLASSIFICATION_CONFIG['backend'] = "cudnn"
 
-CAPTIONING_GPUID = -1
+CAPTIONING_GPUID = 2
 
 CAPTIONING_CONFIG = {
     'input_sz': 224,
