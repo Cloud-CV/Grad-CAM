@@ -35,19 +35,19 @@
             </div>
         </div>
          <div class="row hiddenDiv demoImages" id="demoImages1">
-            <img src="/media/demo_classification/COCO_train2014_000000114269.jpg"
+            <img src="/media/grad_cam/demo_classification/COCO_train2014_000000114269.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src="/media/demo_classification/COCO_train2014_000000125586.jpg"
+            <img src="/media/grad_cam/demo_classification/COCO_train2014_000000125586.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src="/media/demo_classification/COCO_train2014_000000527338.jpg"
+            <img src="/media/grad_cam/demo_classification/COCO_train2014_000000527338.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
          </div>
          <div class="row hiddenDiv demoImages" id="demoImages2">
-            <img src="/media/demo_vqa/COCO_val2014_000000184402.jpg"
+            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000184402.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src="/media/demo_vqa/COCO_val2014_000000393056.jpg"
+            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000393056.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
-            <img src="/media/demo_vqa/COCO_val2014_000000240731.jpg"
+            <img src="/media/grad_cam/demo_vqa/COCO_val2014_000000240731.jpg"
                  onclick="submitDemoImage(this.src)" class="demo_img col-md-4"></img>
             <br>
          </div>
@@ -258,6 +258,7 @@ $(document).ready(function(){
 
     init: function() {
       var myDropzone = this;
+      this.hiddenFileInput.removeAttribute('multiple');
 
       myDropzone.on('success', function(file, data){
         console.log(data);

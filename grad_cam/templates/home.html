@@ -28,7 +28,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="http://cloudcv.org">CloudCV</a>
+            <a class="navbar-brand" href="/">CloudCV</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -47,7 +47,7 @@
 
 
 <style>
-p, h1, h2, h3, a{
+p, h1, h2{
   font-weight: 300 !important;
   font-family: 'Roboto', sans-serif;
 }
@@ -65,7 +65,6 @@ p{
  }
  .member-name{
   cursor: auto;
-  margin-top: 5px;
  }
 
  .img-responsive{
@@ -73,20 +72,6 @@ p{
   display: block;
   height: 150px; 
  }
- .team_div{
-  margin-top: 15px;
- }
-
- #network{
-  margin-top: 15px;
- }
-
- .headings{
-  margin-bottom: 15px;
- }
-#team_heading{
-  margin-bottom: 25px;
-}
 </style>
 
 {% block header_content %}
@@ -103,36 +88,39 @@ p{
 
 {% block abstract%}
 <div class="container">
-<!--     <h2 align="center" class="headings">Abstract</h2>
-    <p>In recent research conducted by our lab (Machine Learning & Perception group), we have developed novel techniques for making CNN more 'transparent' by producing <b>visual explanations</b> i.e visualizations showing what evidence in the image supports a prediction. Research conducted in our lab has shown that models that explain their behavior are considered more trustworthy than typical "black-box" models.</p> -->
+    <h2>Abstract</h2>
+    <p>In recent research conducted by our lab (Machine Learning & Perception group), we have developed novel techniques for making CNN more 'transparent' by producing <b>visual explanations</b> i.e visualizations showing what evidence in the image supports a prediction. Research conducted in our lab has shown that models that explain their behavior are considered more trustworthy than typical "black-box" models.</p>
 
-    <!-- <img id="network" src="{% static 'images/network.png' %}" width="100%" align="center"> -->
+    <img src="{% static 'images/network.jpg' %}" width="80%" align="center">
 </div>
 {% endblock %}
 
 {% block demo_links %}
 
 <div class="container">
-  <h2 align="center" class="headings">Demonstration Links</h2>
+  <h2>Demonstration Links</h2>
     <div class="row">
       <div class="col-md-4">
-      <div class="card text-center">
-        <h3 class="card-title" align="center">Visual Question Answering</h3>
-        <a target="_blank" href="{% url 'vqa' %}" class="btn btn-primary" >Try Visual Question Answering Demo</a>
+      <div class="card card-block">
+        <h3 class="card-title">Visual Question Answering</h3>
+        <p class="card-text">Some randome text description about the demo goes here.</p>
+        <a target="_blank" href="{% url 'vqa' %}" class="btn btn-primary">Try Visual Question Answering Demo</a>
       </div>
     </div>
 
     <div class="col-md-4">
-      <div class="card text-center">
-        <h3 class="card-title" align="center">Classification</h3>
-        <a target="_blank" href="{% url 'classification' %}" class="btn btn-primary" >Try Classification Demo</a>
+      <div class="card card-block">
+        <h3 class="card-title">Classification</h3>
+        <p class="card-text">Some randome text description about the demo goes here.</p>
+        <a target="_blank" href="{% url 'classification' %}" class="btn btn-primary">Try Classification Demo</a>
       </div>
     </div>
 
     <div class="col-md-4">
-      <div class="card text-center">
-        <h3 class="card-title" align="center">Captioning</h3>
-        <a target="_blank" href="{% url 'captioning' %}" class="btn btn-primary text-center">Try Captioning Demo</a>
+      <div class="card card-block">
+        <h3 class="card-title">Captioning</h3>
+        <p class="card-text">Some randome text description about the demo goes here.</p>
+        <a target="_blank" href="{% url 'captioning' %}" class="btn btn-primary">Try Captioning Demo</a>
       </div>
     </div>
 
@@ -142,9 +130,9 @@ p{
 {% endblock %}
 
 {% block team %}
-  <div class="container team_div" align="center">
-    <h2 align="center" class="headings" id="team_heading">Grad-CAM Team</h2>
-    <div class="row team text-center">
+  <div class="container">
+    <h2>Grad-CAM Team</h2>
+    <div class="row team">
       <div class="col-sm-3" align="center">
         <img src="{% static 'images/team/ram.jpeg'%}" class="img-responsive img-circle" alt="Cinque Terre">
         <div class="member-name" align="center"><a  target="_blank" href="https://ramprs.github.io/">Ramprasaath R. Selvaraju</a></div>
@@ -154,8 +142,8 @@ p{
         <div class="member-name" align="center"><a  target="_blank" href="http://abhishekdas.com/">Abhishek Das</a></div>
       </div>
       <div class="col-sm-3" align="center">
-        <img src="{% static 'images/team/rama.jpeg'%}" class="img-responsive img-circle" alt="Cinque Terre">
-        <div class="member-name" align="center"><a  target="_blank" href="http://vrama91.github.io/">Ramakrishna Vedantam</a></div>
+        <img src="{% static 'images/team/Ramakrishna-Vedantam-updated.jpg'%}" class="img-responsive img-circle" alt="Cinque Terre">
+        <div class="member-name" align="center"><a  target="_blank" href="https://scholar.google.com/citations?user=v1CRzeAAAAAJ&hl=en">Ramakrishna Vedantam</a></div>
       </div>
       <div class="col-sm-3" align="center">
         <img src="{% static 'images/team/michael.jpg'%}" class="img-responsive img-circle" alt="Cinque Terre">
@@ -164,13 +152,13 @@ p{
     </div>
 
     <div class="row team">
-      <div class="col-sm-3" align="center"> 
-        <img src="{% static 'images/team/deshraj.png'%}" class="img-responsive img-circle center" alt="Cinque Terre">
-        <div class="member-name" align="center"><a  target="_blank" href="https://www.linkedin.com/in/deshraj-yadav-34325975">Deshraj Yadav</a></div>
-      </div>
       <div class="col-sm-3" align="center">
         <img src="{% static 'images/team/stefan.jpg'%}" class="img-responsive img-circle" alt="Cinque Terre">
         <div class="member-name" align="center"><a  target="_blank" href="https://computing.ece.vt.edu/~steflee/">Stefan Lee</a></div>
+      </div>
+      <div class="col-sm-3" align="center"> 
+        <img src="{% static 'images/team/deshraj.png'%}" class="img-responsive img-circle center" alt="Cinque Terre">
+        <div class="member-name" align="center"><a  target="_blank" href="https://www.linkedin.com/in/deshraj-yadav-34325975">Deshraj Yadav</a></div>
       </div>
       <div class="col-sm-3" align="center">
         <img src="{% static 'images/team/DeviParikh.jpg'%}" class="img-responsive img-circle" alt="Cinque Terre">
@@ -186,6 +174,21 @@ p{
 {% endblock%}
 
 {% block footer %}
+<!-- <div class="container">
+  <div id="footer">
+    <div id="footermsg" align="center"><p>Do you have questions ?</p></div>
+    <a href="">
+      <button type="button" class="btn btn-primary btn-lg">Sign up for email alerts</button>
+    </a>
+
+    <div id="classicons">
+      <a href="https://twitter.com/cs231n">
+        <img src="twitter.svg">
+      </a>
+    </div>
+
+  </div>
+</div> -->
 
 {% endblock %}
 <script>
