@@ -53,8 +53,8 @@ def callback(ch, method, properties, body):
         log_to_terminal(body['socketid'], {"terminal": "Completed the Classification Task"})
 
         ch.basic_ack(delivery_tag = method.delivery_tag)
-    except:
-        log_to_terminal(body['socketid'], {"terminal": json.dumps({"Error": "Some error occured. Please try later"})})
+    except Exception, err:
+        log_to_terminal(body['socketid'], {"terminal": json.dumps({"Traceback": str(traceback.print_exc())})})
 
 channel.basic_consume(callback,
                       queue='classify_task_queue')
