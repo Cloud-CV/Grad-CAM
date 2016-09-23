@@ -13,6 +13,7 @@ import random
 import traceback
 import urllib2
 
+
 def home(request, template_name="index.html"):
     return render(request, template_name,)
 
@@ -28,9 +29,9 @@ def vqa(request, template_name="vqa/vqa.html"):
             img_path = request.POST.get('img_path')
             img_path = urllib2.unquote(img_path)
 
-            abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
+            abs_image_path = settings.BASE_DIR + str(img_path)
+            # abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
             out_dir = os.path.dirname(abs_image_path)
-
             # Run the VQA wrapper
             log_to_terminal(socketid, {"terminal": "Starting Visual Question Answering job..."})
             response = grad_cam_vqa(str(input_question), str(input_answer), str(abs_image_path), str(out_dir+"/"), socketid)
@@ -105,7 +106,7 @@ def file_upload(request):
 
         img_path = os.path.join(output_dir, str(image))
         handle_uploaded_file(image, img_path)
-        return JsonResponse({"file_path": img_path.replace(settings.BASE_DIR, '')})    
+        return JsonResponse({"file_path": img_path})    
 
 
 def handle_uploaded_file(f, path):
@@ -116,11 +117,20 @@ def handle_uploaded_file(f, path):
 
 def get_demo_images(demo_images_path):
     try:
-        demo_images = [random.choice(next(os.walk(demo_images_path))[2]) for i in range(6)]
-        demo_images = [os.path.join(constants.COCO_IMAGES_PATH, x) for x in demo_images]
+        images_list = next(os.walk(demo_images_path))[2]
+        demo_images = select_random_six_demo_images(images_list)
+
+        demo_images = [os.path.join(settings.MEDIA_URL, 'coco', 'val2014', x) for x in demo_images]
     except:
         images = ['img1.jpg', 'img2.jpg', 'img3.jpg', 'img4.jpg', 'img5.jpg', 'img6.jpg', ]
         demo_images = [os.path.join(settings.STATIC_URL, 'images', x) for x in images]
-
     return demo_images
 
+
+def select_random_six_demo_images(images_list):
+    prefixes = ('classify', 'vqa', 'captioning')
+    demo_images = [random.choice(images_list) for i in range(6)]
+    for i in demo_images[:]:
+        if i.startswith(prefixes):
+            demo_images = select_random_six_demo_images(images_list)
+    return demo_images
