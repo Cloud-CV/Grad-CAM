@@ -1122,7 +1122,7 @@ var answers = {
 
 $(document).ready(function(){
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-  var socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
+  var socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/ws" + window.location.pathname);
 
   socket.onopen = function() {
       console.log("User connected to the socket with socketid "+ "{{socketid}}");
