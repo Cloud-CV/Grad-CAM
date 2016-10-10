@@ -1,6 +1,8 @@
 
 # Grad-CAM: Gradient-weighted Class Activation Mapping
 
+[![Join the chat at https://gitter.im/Cloud-CV/Grad-CAM](https://badges.gitter.im/Cloud-CV/Grad-CAM.svg)](https://gitter.im/Cloud-CV/Grad-CAM?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Grad-CAM uses the class-specific gradient information flowing into the final convolutional layer of a CNN to produce a coarse localization map of the important regions in the image. It is a novel technique for making CNN more 'transparent' by producing **visual explanations** i.e visualizations showing what evidence in the image supports a prediction. You can play with Grad-CAM demonstrations at the following links:
 
 VQA Demo: http://gradcam.cloudcv.org/vqa
