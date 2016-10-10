@@ -13,7 +13,7 @@ Classification Demo: http://gradcam.cloudcv.org/vqa
 
 ![Imgur](http://i.imgur.com/a1IiQg4.gif)
 
-Captioning Demo: http://gradcam.cloudcv.org/vqa
+Captioning Demo: http://gradcam.cloudcv.org/captioning
 
 ![Imgur](http://i.imgur.com/BsOOpIn.gif)
 
