@@ -7,13 +7,16 @@ Grad-CAM uses the class-specific gradient information flowing into the final con
 
 VQA Demo: http://gradcam.cloudcv.org/vqa
 
+
 ![Imgur](http://i.imgur.com/6jB4lAq.gif)
 
 Classification Demo: http://gradcam.cloudcv.org/vqa
 
+
 ![Imgur](http://i.imgur.com/a1IiQg4.gif)
 
 Captioning Demo: http://gradcam.cloudcv.org/captioning
+
 
 ![Imgur](http://i.imgur.com/BsOOpIn.gif)
 
@@ -21,7 +24,7 @@ Captioning Demo: http://gradcam.cloudcv.org/captioning
 
 We use RabbitMQ to queue the submitted jobs. Also, we use Redis as backend for realtime communication using websockets.
 
-All the instructions for setting Grad-CAM from scratch can be found  [here](http://github.com/Cloud-CV/Grad-CAM/installation.md)
+All the instructions for setting Grad-CAM from scratch can be found  [here](https://github.com/Cloud-CV/Grad-CAM/blob/master/INSTALLATION.md)
 
 Note: For best results, its recommended to run the Grad-CAM demo on GPU enabled machines.
 

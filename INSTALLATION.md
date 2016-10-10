@@ -1,77 +1,58 @@
-sudo apt-get install -y git python-pip python-dev
-sudo apt-get install -y python-dev
-sudo apt-get install -y autoconf automake libtool curl make g++ unzip
-sudo apt-get install -y libgflags-dev libgoogle-glog-dev liblmdb-dev
-sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
+## Installation Instructions
 
-# install torch
-git clone https://github.com/torch/distro.git ~/torch --recursive
-cd ~/torch; bash install-deps;
-./install.sh
-source ~/.bashrc
+### Installing the Essential requirements
+    sudo apt-get install -y git python-pip python-dev
+    sudo apt-get install -y python-dev
+    sudo apt-get install -y autoconf automake libtool curl make g++ unzip
+    sudo apt-get install -y libgflags-dev libgoogle-glog-dev liblmdb-dev
+    sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
 
-# install pytorch
-mkdir Projects
-cd Projects
-git clone https://github.com/hughperkins/pytorch.git
-cd pytorch
-source ~/torch/install/bin/torch-activate
-./build.sh
+### Install Torch
+    git clone https://github.com/torch/distro.git ~/torch --recursive
+    cd ~/torch; bash install-deps;
+    ./install.sh
+    source ~/.bashrc
 
-sudo apt-get install -y redis-server rabbitmq-server
-sudo rabbitmq-plugins enable rabbitmq_management
-sudo service rabbitmq-server restart 
-sudo service redis-server restart
+### Install PyTorch(Python Lua Wrapper)
+    git clone https://github.com/hughperkins/pytorch.git
+    cd pytorch
+    source ~/torch/install/bin/torch-activate
+    ./build.sh
 
-# install nginx
-sudo apt-get update
-sudo apt-get install -y python-software-properties
-sudo add-apt-repository ppa:nginx/development
-sudo apt-get install -y nginx
+### Install RabbitMQ and Redis Server
+    sudo apt-get install -y redis-server rabbitmq-server
+    sudo rabbitmq-plugins enable rabbitmq_management
+    sudo service rabbitmq-server restart 
+    sudo service redis-server restart
 
-luarocks install loadcaffe
+### Lua dependencies
+    luarocks install loadcaffe
+The below two dependencies are only required if you are going to use GPU
 
-# if gpu
-luarocks install cudnn
-luarocks install cunn
+    luarocks install cudnn
+    luarocks install cunn
 
-# cuda installation
-# link to download cuda https://developer.nvidia.com/cuda-downloads
-cd ..
-mkdir cuda_installation
-cd cuda_installation
-export DEBIAN_FRONTEND=noninteractive
-sudo apt-get update -q -y
-sudo apt-get -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install linux-generic
-wget http://developer.download.nvidia.com/compute/cuda/7.5/Prod/local_installers/cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
+### Cuda Installation
 
-sudo dpkg -i cuda-repo-ubuntu1404-7-5-local_7.5-18_amd64.deb
-sudo apt-get update -q -y
-sudo apt-get install cuda -q -y
+Note: CUDA and cuDNN is only required if you are going to use GPU
 
-# install cudnn 
-export CUDA_HOME=/usr/local/cuda-7.5 
-export LD_LIBRARY_PATH=${CUDA_HOME}/lib64 
- 
-PATH=${CUDA_HOME}/bin:${PATH} 
-export PATH
+Download and install CUDA and cuDNN from [nvidia website](https://developer.nvidia.com/cuda-downloads) 
 
-sudo add-apt-repository ppa:graphics-drivers/ppa
-sudo apt-get update
-sudo apt-get install nvidia-370
+### Install dependencies
+    git clone https://github.com/Cloud-CV/Grad-CAM.git
+    cd Grad-CAM
+    git submodule init && git submodule update
+    sh models/download_models.sh
+    pip install -r requirements.txt
+    python -m nltk.downloader all
 
-#install cudnn from nvidia site and then run the following command
-export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH
+### Running the RabbitMQ workers and Development Server
 
-#install dependencies
-cd ..
-git clone https://github.com/Cloud-CV/Grad-CAM.git
-cd Grad-CAM
+Open 4 different terminal sessions and run the following commands:
 
-git submodule init && git submodule update
-sh models/download_models.sh
-pip install -r requirements.txt
+    python worker_vqa.py
+    python worker_classify.py
+    python worker_captioning.py
+    python manage.py runserver
 
-python -m nltk.downloader all
-
-python manage.py collectstatic
+You are all set now. Visit http://127.0.0.1:8000 and you will have your demo running successfully.
