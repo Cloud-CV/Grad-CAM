@@ -5,7 +5,6 @@ from channels import Group
 
 from grad_cam.sender import grad_cam_classification, grad_cam_vqa, grad_cam_captioning
 from grad_cam.utils import log_to_terminal
-
 import grad_cam.constants as constants
 import uuid
 import os
@@ -128,7 +127,7 @@ def get_demo_images(demo_images_path):
 
 
 def select_random_six_demo_images(images_list):
-    prefixes = ('classify', 'vqa', 'captioning')
+    prefixes = ('classify', 'vqa', 'caption')
     demo_images = [random.choice(images_list) for i in range(6)]
     for i in demo_images[:]:
         if i.startswith(prefixes):
