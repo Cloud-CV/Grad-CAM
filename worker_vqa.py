@@ -2,6 +2,10 @@ from __future__ import absolute_import
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'demo.settings')
 
+import django
+django.setup()
+
+from grad_cam.models import VqaJob
 from django.conf import settings
 from grad_cam.utils import log_to_terminal
 
@@ -12,6 +16,7 @@ import pika
 import time
 import yaml
 import json
+import traceback
 
 # Loading the VQA Model forever
 VQAModel = PyTorchHelpers.load_lua_class(constants.VQA_LUA_PATH, 'VQATorchModel')
@@ -45,6 +50,9 @@ def callback(ch, method, properties, body):
         body = yaml.safe_load(body) # using yaml instead of json.loads since that unicodes the string in value
 
         result = VqaTorchModel.predict(body['image_path'], constants.VQA_CONFIG['input_sz'], constants.VQA_CONFIG['input_sz'], body['input_question'], body['input_answer'], body['output_dir'])
+
+        VqaJob.objects.create(job_id=body['socketid'], input_answer=body['input_answer'], image=str(result['input_image']).replace(settings.BASE_DIR, '')[1:], predicted_answer = result['answer'], gcam_image=str(result['vqa_gcam']).replace(settings.BASE_DIR, '')[1:])
+
         result['input_image'] = str(result['input_image']).replace(settings.BASE_DIR, '')
         result['vqa_gcam'] = str(result['vqa_gcam']).replace(settings.BASE_DIR, '')
         result['vqa_gcam_raw'] = str(result['vqa_gcam_raw']).replace(settings.BASE_DIR, '')

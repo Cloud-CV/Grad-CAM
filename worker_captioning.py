@@ -2,8 +2,12 @@ from __future__ import absolute_import
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'demo.settings')
 
+import django
+django.setup()
+
 from django.conf import settings
 from grad_cam.utils import log_to_terminal
+from grad_cam.models import CaptioningJob
 
 import grad_cam.constants as constants
 import PyTorch
@@ -12,6 +16,7 @@ import pika
 import time
 import yaml
 import json
+import traceback
 
 CaptioningModel = PyTorchHelpers.load_lua_class(constants.CAPTIONING_LUA_PATH, 'CaptioningTorchModel')
 CaptioningTorchModel = CaptioningModel(
@@ -37,6 +42,8 @@ def callback(ch, method, properties, body):
         body = yaml.safe_load(body) # using yaml instead of json.loads since that unicodes the string in value
 
         result = CaptioningTorchModel.predict(body['image_path'], constants.VQA_CONFIG['input_sz'], constants.VQA_CONFIG['input_sz'], body['caption'], body['output_dir'])
+
+        CaptioningJob.objects.create(job_id=body['socketid'], input_caption=body['caption'], image=str(result['input_image']).replace(settings.BASE_DIR, '')[1:], predicted_caption = result['pred_caption'], gcam_image=str(result['captioning_gcam']).replace(settings.BASE_DIR, '')[1:])
 
         result['input_image'] = str(result['input_image']).replace(settings.BASE_DIR, '')
         result['captioning_gcam'] = str(result['captioning_gcam']).replace(settings.BASE_DIR, '')
