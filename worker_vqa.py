@@ -18,6 +18,9 @@ import yaml
 import json
 import traceback
 
+# Close the database connection in order to make sure that MYSQL Timeout doesn't occur
+django.db.close_old_connections()
+
 # Loading the VQA Model forever
 VQAModel = PyTorchHelpers.load_lua_class(constants.VQA_LUA_PATH, 'VQATorchModel')
 VqaTorchModel = VQAModel(
@@ -51,7 +54,10 @@ def callback(ch, method, properties, body):
 
         result = VqaTorchModel.predict(body['image_path'], constants.VQA_CONFIG['input_sz'], constants.VQA_CONFIG['input_sz'], body['input_question'], body['input_answer'], body['output_dir'])
 
-        VqaJob.objects.create(job_id=body['socketid'], input_answer=body['input_answer'], image=str(result['input_image']).replace(settings.BASE_DIR, '')[1:], predicted_answer = result['answer'], gcam_image=str(result['vqa_gcam']).replace(settings.BASE_DIR, '')[1:])
+        VqaJob.objects.create(job_id=body['socketid'], question=body['input_question'], input_answer=body['input_answer'], image=str(result['input_image']).replace(settings.BASE_DIR, '')[1:], predicted_answer = result['answer'], gcam_image=str(result['vqa_gcam']).replace(settings.BASE_DIR, '')[1:])
+
+        # Close the database connection in order to make sure that MYSQL Timeout doesn't occur
+        django.db.close_old_connections()
 
         result['input_image'] = str(result['input_image']).replace(settings.BASE_DIR, '')
         result['vqa_gcam'] = str(result['vqa_gcam']).replace(settings.BASE_DIR, '')

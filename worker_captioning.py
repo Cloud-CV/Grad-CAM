@@ -18,6 +18,9 @@ import yaml
 import json
 import traceback
 
+# Close the database connection in order to make sure that MYSQL Timeout doesn't occur
+django.db.close_old_connections()
+
 CaptioningModel = PyTorchHelpers.load_lua_class(constants.CAPTIONING_LUA_PATH, 'CaptioningTorchModel')
 CaptioningTorchModel = CaptioningModel(
     constants.CAPTIONING_CONFIG['model_path'],
@@ -44,6 +47,9 @@ def callback(ch, method, properties, body):
         result = CaptioningTorchModel.predict(body['image_path'], constants.VQA_CONFIG['input_sz'], constants.VQA_CONFIG['input_sz'], body['caption'], body['output_dir'])
 
         CaptioningJob.objects.create(job_id=body['socketid'], input_caption=body['caption'], image=str(result['input_image']).replace(settings.BASE_DIR, '')[1:], predicted_caption = result['pred_caption'], gcam_image=str(result['captioning_gcam']).replace(settings.BASE_DIR, '')[1:])
+
+        # Close the database connection in order to make sure that MYSQL Timeout doesn't occur
+        django.db.close_old_connections()
 
         result['input_image'] = str(result['input_image']).replace(settings.BASE_DIR, '')
         result['captioning_gcam'] = str(result['captioning_gcam']).replace(settings.BASE_DIR, '')

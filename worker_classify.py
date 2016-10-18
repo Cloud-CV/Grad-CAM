@@ -18,6 +18,9 @@ import yaml
 import json
 import traceback
 
+# Close the database connection in order to make sure that MYSQL Timeout doesn't occur
+django.db.close_old_connections()
+
 ClassificationModel = PyTorchHelpers.load_lua_class(constants.CLASSIFICATION_LUA_PATH, 'ClassificationTorchModel')
 ClassificationTorchModel = ClassificationModel(
     constants.CLASSIFICATION_CONFIG['proto_file'],
@@ -45,6 +48,9 @@ def callback(ch, method, properties, body):
         result = ClassificationTorchModel.predict(body['image_path'], body['label'], body['output_dir'])
 
         ClassificationJob.objects.create(job_id=body['socketid'], input_label=body['label'], image=str(result['input_image']).replace(settings.BASE_DIR, '')[1:], predicted_label = result['pred_label'], gcam_image=str(result['classify_gcam']).replace(settings.BASE_DIR, '')[1:])
+
+        # Close the database connection in order to make sure that MYSQL Timeout doesn't occur
+        django.db.close_old_connections()
 
         result['input_image'] = str(result['input_image']).replace(settings.BASE_DIR, '')
         result['classify_gcam'] = str(result['classify_gcam']).replace(settings.BASE_DIR, '')
