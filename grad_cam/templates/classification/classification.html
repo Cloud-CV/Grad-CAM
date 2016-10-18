@@ -169,9 +169,8 @@ function submitDemoImage(src){
   scrollToElement($("#ResultDiv"));
 }
 
-var label = $("#label").val();
-
 function submitImageForClassification () {
+  var label = $("#label").val();
   var label_id = null;
   $.each(labels, function(index, value) {
         if(value == label){
