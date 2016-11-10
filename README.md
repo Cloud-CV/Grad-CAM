@@ -5,6 +5,8 @@
 
 Grad-CAM uses the class-specific gradient information flowing into the final convolutional layer of a CNN to produce a coarse localization map of the important regions in the image. It is a novel technique for making CNN more 'transparent' by producing **visual explanations** i.e visualizations showing what evidence in the image supports a prediction. You can play with Grad-CAM demonstrations at the following links:
 
+**Arxiv Paper Link**: https://arxiv.org/abs/1610.02391
+
 VQA Demo: http://gradcam.cloudcv.org/vqa
 
 
