@@ -126,6 +126,9 @@ mix-blend-mode: multiply;
   <div class="page-header">
     <h2 id="userImages">Try Grad-CAM On Your Images</h2>
   </div>
+  {% block url_content %}
+    {% include 'upload_image_url.html' %}
+  {% endblock %}
 
   <form id="my-dropzone" method="post" class="dropzone
   " action="{% url "upload" %}" enctype="multipart/form-data">
