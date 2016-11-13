@@ -1220,11 +1220,11 @@ function submitImageUsingUrl(){
   $.ajax({
     type : "POST",
     url  : "/upload/grad_cam_using_image_url/",
-    data : {'scr':src, 'socketid':window.socketid}
+    data : {'src': src  , 'socketid': "{{socketid}}", 'csrfmiddlewaretoken': '{{ csrf_token }}', type:"vqa"}
   }).done(function(data){
     console.log(data);
   });
-}
+};
 
 $("#image_url").keydown(function(e){
   if (e.which === 13){

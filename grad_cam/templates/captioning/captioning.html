@@ -246,6 +246,36 @@ function submitImageForCaptioning () {
     console.log("Ajax call completed successfully");
   });
 }
+
+function submitImageUsingUrl(){
+  var src = document.getElementById("image_url").value;
+  $('#comments').prepend('<br>');
+  $('#comments').prepend('<li>' + "Starting the Image Download process." + '</li>');
+
+  scrollToElement($("#termstart"));
+  scrollToElement($("#resultHeading"));
+
+  $.ajax({
+    type : "POST",
+    url  : "/upload/grad_cam_using_image_url/",
+    data : {'src': src  , 'socketid': "{{socketid}}", 'csrfmiddlewaretoken': '{{ csrf_token }}', type:"captioning"}
+  }).done(function(data){
+    console.log(data);
+  });
+};
+
+$("#image_url").keydown(function(e){
+  if (e.which === 13){
+    $("#image_url_submit_btn").click();
+  }
+});
+
+$('#image_url').on('paste', function(){
+  setTimeout(function(){
+    $("#image_url_submit_btn").click();
+  }, 0);
+});
+
 </script>
 <br>
   <div class="page-header">
