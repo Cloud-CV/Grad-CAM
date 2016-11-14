@@ -11,9 +11,10 @@ import os
 import random
 import traceback
 import urllib2
-from urlparse import urlparse
 import requests
-from django.http import Http404
+from urlparse import urlparse
+from django.http import HttpResponse
+
 
 def home(request, template_name="index.html"):
     return render(request, template_name,)
@@ -153,24 +154,23 @@ def upload_image_using_url(request):
 
             img_name =  os.path.basename(urlparse(image_url).path)
             response = requests.get(image_url, stream=True)
-
+            
             if response.status_code == 200:
                 random_uuid = uuid.uuid1()
                 output_dir = os.path.join(dir_type, str(random_uuid))
-                print output_dir
 
                 if not os.path.exists(output_dir):
                     os.makedirs(output_dir)
 
-                img_path = os.path.join(output_dir, str(response))
+                img_path = os.path.join(output_dir, str(img_name))
+                with open(os.path.join(output_dir, img_name), 'wb+') as f:
+                    f.write(response.content)
+
+                img_path =  "/" + "/".join(img_path.split('/')[-5:])
                 return JsonResponse({"file_path": img_path})
             else:
-                raise Http404("Please Enter the Correct URL.")
+                return HttpResponse("Please Enter the Correct URL.")
         except:
-            raise Http404("No images matching this url.")
-
-
-def handle_uploaded_file(f, path):
-    with open(path, 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
+            return HttpResponse("No images matching this url.")
+    else:
+        return HttpResponse("Invalid request method.")
