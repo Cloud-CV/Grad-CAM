@@ -1219,12 +1219,12 @@ function submitImageUsingUrl(){
 
   $.ajax({
     type : "POST",
-    url  : "/upload/grad_cam_using_image_url/",
+    url  : '{% url 'upload-url' %}',
     data : {'src': src  , 'socketid': "{{socketid}}", 'csrfmiddlewaretoken': '{{ csrf_token }}', type:"vqa"}
   }).done(function(data){
     console.log(data);
     $("#inputImageAfterUpload").attr('src', data["file_path"]);
-     document.getElementById("ResultDiv").style.display="block";
+    document.getElementById("ResultDiv").style.display="block";
   });
 };
 
