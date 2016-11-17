@@ -8,5 +8,5 @@ urlpatterns = patterns('',
     url(r'^upload', views.file_upload, name='upload'),
     url(r'^classification', views.classification, name='classification'),
     url(r'^captioning', views.captioning, name='captioning'),
-    url(r'^', views.home, name='home'),
+    url(r'^$', views.home, name='home'),
 )
