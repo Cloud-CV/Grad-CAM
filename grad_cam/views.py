@@ -108,7 +108,10 @@ def file_upload(request):
 
         img_path = os.path.join(output_dir, str(image))
         handle_uploaded_file(image, img_path)
-        return JsonResponse({"file_path": img_path})    
+        return JsonResponse({"file_path": img_path})
+    else:
+        pass
+
 
 
 def handle_uploaded_file(f, path):
@@ -154,7 +157,7 @@ def upload_image_using_url(request):
 
             img_name =  os.path.basename(urlparse(image_url).path)
             response = requests.get(image_url, stream=True)
-            
+
             if response.status_code == 200:
                 random_uuid = uuid.uuid1()
                 output_dir = os.path.join(dir_type, str(random_uuid))
@@ -167,6 +170,7 @@ def upload_image_using_url(request):
                     f.write(response.content)
 
                 img_path =  "/" + "/".join(img_path.split('/')[-5:])
+                
                 return JsonResponse({"file_path": img_path})
             else:
                 return HttpResponse("Please Enter the Correct URL.")

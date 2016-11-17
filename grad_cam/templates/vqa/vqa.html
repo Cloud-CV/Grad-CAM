@@ -1222,8 +1222,9 @@ function submitImageUsingUrl(){
     url  : "/upload/grad_cam_using_image_url/",
     data : {'src': src  , 'socketid': "{{socketid}}", 'csrfmiddlewaretoken': '{{ csrf_token }}', type:"vqa"}
   }).done(function(data){
-    console.log(data["file_path"]);
+    console.log(data);
     $("#inputImageAfterUpload").attr('src', data["file_path"]);
+     document.getElementById("ResultDiv").style.display="block";
   });
 };
 
