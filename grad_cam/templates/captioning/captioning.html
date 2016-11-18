@@ -129,6 +129,9 @@ mix-blend-mode: multiply;
   {% block url_content %}
     {% include 'upload_image_url.html' %}
   {% endblock %}
+  <div class="col-sm-12">
+    <h3 align="center">OR</h3>
+  </div>
 
   <form id="my-dropzone" method="post" class="dropzone
   " action="{% url "upload" %}" enctype="multipart/form-data">
