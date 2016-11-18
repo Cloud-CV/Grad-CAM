@@ -132,16 +132,17 @@ mix-blend-mode: multiply;
   <div class="col-sm-12">
     <h3 align="center">OR</h3>
   </div>
+  <div class="container">    
+    <form id="my-dropzone" method="post" class="dropzone
+    " action="{% url "upload" %}" enctype="multipart/form-data">
+    <input type="hidden" id="demoType" name="demo_type" value=""> 
+    <input type="hidden" id="appType" name="type" value="captioning">
 
-  <form id="my-dropzone" method="post" class="dropzone
-  " action="{% url "upload" %}" enctype="multipart/form-data">
-  <input type="hidden" id="demoType" name="demo_type" value=""> 
-  <input type="hidden" id="appType" name="type" value="captioning">
+    {% csrf_token %}
 
-  {% csrf_token %}
-
-  {% include 'form.html' %}
-  </form>
+    {% include 'form.html' %}
+    </form>
+  </div>
 
 {% endblock %}
 
@@ -265,7 +266,9 @@ function submitImageUsingUrl(){
   }).done(function(data){
     console.log(data);
     $("#inputImageAfterUpload").attr('src', data["file_path"]);
-    document.getElementById("ResultDiv").style.display="block";
+    $("#label").val("");
+    $("#show-grad-cam-result").hide();
+    $("#ResultDiv").show();
   });
 };
 
