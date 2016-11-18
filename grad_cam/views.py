@@ -11,6 +11,9 @@ import os
 import random
 import traceback
 import urllib2
+import requests
+from urlparse import urlparse
+from django.http import HttpResponse
 
 
 def home(request, template_name="index.html"):
@@ -105,7 +108,10 @@ def file_upload(request):
 
         img_path = os.path.join(output_dir, str(image))
         handle_uploaded_file(image, img_path)
-        return JsonResponse({"file_path": img_path})    
+        return JsonResponse({"file_path": img_path})
+    else:
+        pass
+
 
 
 def handle_uploaded_file(f, path):
@@ -133,3 +139,42 @@ def select_random_six_demo_images(images_list):
         if i.startswith(prefixes):
             demo_images = select_random_six_demo_images(images_list)
     return demo_images
+
+
+def upload_image_using_url(request):
+    if request.method == "POST":
+        try:
+            socketid = request.POST.get('socketid', None)
+            image_url = request.POST.get('src', None)
+            demo_type = request.POST.get('type')
+
+            if demo_type == "vqa":
+                dir_type = constants.VQA_CONFIG['image_dir']
+            elif demo_type == "classification":
+                dir_type = constants.CLASSIFICATION_CONFIG['image_dir']
+            elif demo_type == "captioning":
+                dir_type = constants.CAPTIONING_CONFIG['image_dir']
+
+            img_name =  os.path.basename(urlparse(image_url).path)
+            response = requests.get(image_url, stream=True)
+
+            if response.status_code == 200:
+                random_uuid = uuid.uuid1()
+                output_dir = os.path.join(dir_type, str(random_uuid))
+
+                if not os.path.exists(output_dir):
+                    os.makedirs(output_dir)
+
+                img_path = os.path.join(output_dir, str(img_name))
+                with open(os.path.join(output_dir, img_name), 'wb+') as f:
+                    f.write(response.content)
+
+                img_path =  "/" + "/".join(img_path.split('/')[-5:])
+                
+                return JsonResponse({"file_path": img_path})
+            else:
+                return HttpResponse("Please Enter the Correct URL.")
+        except:
+            return HttpResponse("No images matching this url.")
+    else:
+        return HttpResponse("Invalid request method.")

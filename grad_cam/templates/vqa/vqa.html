@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+
 {% block header_content %}
 
 <a href="https://github.com/Cloud-CV/Grad-CAM" target="_blank"><img style="position: fixed; top: 0; right: 0; border: 0; z-index:2000;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
@@ -63,6 +64,12 @@ mix-blend-mode: multiply;
 <div class="container">
   <div class="page-header">
     <h2 id="userImages">Try Grad-CAM on your images</h2>
+  </div>
+  {% block url_content %}
+  {% include 'upload_image_url.html' %}
+  {% endblock %}
+  <div class="col-sm-12">
+    <h3 align="center">OR</h3>
   </div>
 
   <form id="my-dropzone" method="post" class="dropzone" action="{% url "upload" %}" enctype="multipart/form-data">
@@ -1204,6 +1211,37 @@ function submitImageForVqa () {
     $('#comments').prepend('<li>' + "Enter the question to submit the job" + '</li>');
   }
 }
+
+function submitImageUsingUrl(){
+  var src = document.getElementById("image_url").value;
+  $('#comments').prepend('<br>');
+  $('#comments').prepend('<li>' + "Starting the Image Download process." + '</li>');
+
+  scrollToElement($("#termstart"));
+  scrollToElement($("#resultHeading"));
+
+  $.ajax({
+    type : "POST",
+    url  : '{% url 'upload-url' %}',
+    data : {'src': src  , 'socketid': "{{socketid}}", 'csrfmiddlewaretoken': '{{ csrf_token }}', type:"vqa"}
+  }).done(function(data){
+    console.log(data);
+    $("#inputImageAfterUpload").attr('src', data["file_path"]);
+    document.getElementById("ResultDiv").style.display="block";
+  });
+};
+
+$("#image_url").keydown(function(e){
+  if (e.which === 13){
+    $("#image_url_submit_btn").click();
+  }
+});
+
+$('#image_url').on('paste', function(){
+  setTimeout(function(){
+    $("#image_url_submit_btn").click();
+  }, 0);
+});
 
 </script>
 <br>
