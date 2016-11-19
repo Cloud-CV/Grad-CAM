@@ -17,6 +17,7 @@ import time
 import yaml
 import json
 import traceback
+import urllib
 
 # Close the database connection in order to make sure that MYSQL Timeout doesn't occur
 django.db.close_old_connections()
@@ -51,9 +52,9 @@ def callback(ch, method, properties, body):
         # Close the database connection in order to make sure that MYSQL Timeout doesn't occur
         django.db.close_old_connections()
 
-        result['input_image'] = str(result['input_image']).replace(settings.BASE_DIR, '')
-        result['captioning_gcam'] = str(result['captioning_gcam']).replace(settings.BASE_DIR, '')
-        result['captioning_gcam_raw'] = str(result['captioning_gcam_raw']).replace(settings.BASE_DIR, '')
+        result['input_image'] = urllib.unquote(str(result['input_image']).replace(settings.BASE_DIR, ''))
+        result['captioning_gcam'] = urllib.unquote(str(result['captioning_gcam']).replace(settings.BASE_DIR, ''))
+        result['captioning_gcam_raw'] = urllib.unquote(str(result['captioning_gcam_raw']).replace(settings.BASE_DIR, ''))
         result['captioning_gb'] = str(result['captioning_gb']).replace(settings.BASE_DIR, '')
         result['captioning_gb_gcam'] = str(result['captioning_gb_gcam']).replace(settings.BASE_DIR, '')
 
