@@ -23,7 +23,10 @@ function TorchModel:__init(proto_file, model_file, input_sz, backend, layer_name
   self:loadModel(proto_file, model_file, backend)
 
   torch.manualSeed(self.seed)
+  -- For GPU
   torch.setdefaulttensortype('torch.FloatTensor')
+  -- For CPU
+  -- torch.setdefaulttensortype('torch.DoubleTensor')
 
   if self.gpuid >= 0 then
     require 'cunn'
@@ -31,7 +34,7 @@ function TorchModel:__init(proto_file, model_file, input_sz, backend, layer_name
     cutorch.setDevice(1)
     cutorch.manualSeed(self.seed)
   end
-
+  collectgarbage()
 end
 
 function TorchModel:loadModel(proto_file, model_file, backend)
@@ -144,6 +147,7 @@ function TorchModel:predict(input_image_path, input_sz, input_sz, input_question
   -- Tokenize question
   local cmd = 'python misc/prepro_ques.py --question "'.. input_question..'"'
   os.execute(cmd)
+  cmd = nil
   local file = io.open('ques_feat.json')
   local text = file:read()
   file:close()
@@ -156,8 +160,9 @@ function TorchModel:predict(input_image_path, input_sz, input_sz, input_question
   if self.gpuid >= 0 then
     fv_sorted_q[1] = fv_sorted_q[1]:cuda()
     fv_sorted_q[3] = fv_sorted_q[3]:cuda()
-
     fv_sorted_q[4] = fv_sorted_q[4]:cuda()
+  else
+    fv_sorted_q[1] = fv_sorted_q[1]:double()
   end
 
   local question_max_length = fv_sorted_q[2]:size(1)
@@ -179,9 +184,6 @@ function TorchModel:predict(input_image_path, input_sz, input_sz, input_question
   local inv_vocab = utils.table_invert(self.json_file['ix_to_ans'])
   if input_answer ~= '' and inv_vocab[input_answer] ~= nil then answer_idx = inv_vocab[input_answer] else input_answer = answer answer_idx = inv_vocab[answer] end
 
-  print("Question: ", input_question)
-  print("Predicted answer: ", answer)
-  print("Grad-CAM answer: ", input_answer)
   -- Set gradInput
   local doutput = utils.create_grad_input(self.multimodal_net.modules[#self.multimodal_net.modules], answer_idx)
 
@@ -205,6 +207,9 @@ function TorchModel:predict(input_image_path, input_sz, input_sz, input_question
 
   -- Guided Backprop
   local gb_viz = self.cnn_gb:backward(img, dcnn)
+
+  -- self.cnn_gb = nil
+  -- collectgarbage()
 
   -- BGR to RGB
   gb_viz = gb_viz:index(1, torch.LongTensor{3, 2, 1})
