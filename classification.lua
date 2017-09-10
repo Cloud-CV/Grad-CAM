@@ -19,7 +19,10 @@ function TorchModel:__init(proto_file, model_file, backend, input_sz, layer_name
   self.gpuid = gpuid
   self:loadModel(proto_file, model_file, backend)
   torch.manualSeed(self.seed)
-  torch.setdefaulttensortype('torch.DoubleTensor')
+  -- GPU
+  -- torch.setdefaulttensortype('torch.DoubleTensor')
+  -- CPU
+  torch.setdefaulttensortype('torch.FloatTensor')
   
   if gpuid >= 0 then
     require 'cunn'
@@ -33,31 +36,33 @@ end
 function TorchModel:loadModel(proto_file, model_file, backend)
 
   self.net = loadcaffe.load(proto_file, model_file, backend)
-  local cnn = self.net
+  self.net = self.net:float()
 
   -- Set to evaluate and remove softmax layer
-  cnn:evaluate()
-  cnn:remove()
+  self.net:evaluate()
+  self.net:remove()
+
+  -- Create GB CNN here itself
+  self.net_gb = self.net:clone()
+  self.net_gb:replace(utils.guidedbackprop)
+  self.net_gb = self.net_gb:float()
 end
 
 function TorchModel:predict(input_image_path, label, out_path)
-  -- Clone & replace ReLUs for Guided Backprop
-  local cnn_gb = self.net:clone()
-
-  cnn_gb:replace(utils.guidedbackprop)
-
-
   local img = utils.preprocess(input_image_path, input_sz, input_sz)
 
   if self.gpuid >= 0 then
     self.net:cuda()
-    cnn_gb:cuda()
+    self.net_gb:cuda()
     img = img:cuda()
+  else
+    print("THIS GOT EXECUTED")
+    img = img:float()
   end
   
   -- Forward pass
   local output = self.net:forward(img)
-  local output_gb = cnn_gb:forward(img)
+  local output_gb = self.net_gb:forward(img)
 
   -- Take argmax
   local score, pred_label = torch.max(output,1)
@@ -83,7 +88,7 @@ function TorchModel:predict(input_image_path, label, out_path)
   result['classify_gcam'] = out_path .. 'classify_gcam_' .. label .. '.png'
 
   -- Guided Backprop
-  local gb_viz = cnn_gb:backward(img, doutput)
+  local gb_viz = self.net_gb:backward(img, doutput)
   
   -- BGR to RGB
   gb_viz = gb_viz:index(1, torch.LongTensor{3, 2, 1})
