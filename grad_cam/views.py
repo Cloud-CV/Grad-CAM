@@ -178,3 +178,22 @@ def upload_image_using_url(request):
             return HttpResponse("No images matching this url.")
     else:
         return HttpResponse("Invalid request method.")
+
+
+def captioning_api(request):
+    if request.method == "POST":
+        try:
+            image = request.FILES['image']
+            caption = request.POST.get('caption', '')
+
+            abs_image_path = os.path.join(settings.BASE_DIR, str(img_path[1:]))
+            out_dir = os.path.dirname(abs_image_path)
+
+            # Run the captioning wrapper
+            log_to_terminal(socketid, {"terminal": "Starting Captioning job..."})
+            response = grad_cam_captioning(str(abs_image_path), str(caption), str(out_dir+"/"), socketid)
+        except Exception, err:
+            log_to_terminal(socketid, {"terminal": traceback.print_exc()})
+
+    demo_images = get_demo_images(constants.COCO_IMAGES_PATH)
+    return render(request, template_name, {"demo_images": demo_images, 'socketid': socketid})
