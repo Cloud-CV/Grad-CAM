@@ -7,17 +7,17 @@ Grad-CAM uses the class-specific gradient information flowing into the final con
 
 **Arxiv Paper Link**: https://arxiv.org/abs/1610.02391
 
-VQA Demo: http://gradcam.cloudcv.org/vqa
+### VQA Demo: http://gradcam.cloudcv.org/vqa
 
 
 ![Imgur](http://i.imgur.com/6jB4lAq.gif)
 
-Classification Demo: http://gradcam.cloudcv.org/classification
+### Classification Demo: http://gradcam.cloudcv.org/classification
 
 
 ![Imgur](http://i.imgur.com/a1IiQg4.gif)
 
-Captioning Demo: http://gradcam.cloudcv.org/captioning
+### Captioning Demo: http://gradcam.cloudcv.org/captioning
 
 
 ![Imgur](http://i.imgur.com/BsOOpIn.gif)
