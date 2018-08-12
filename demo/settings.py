@@ -102,3 +102,5 @@ CHANNEL_LAYERS = {
         "ROUTING": "grad_cam.routing.channel_routing",
     },
 }
+
+X_FRAME_OPTIONS = 'https://cloudcv.org/projects/grad-cam'
