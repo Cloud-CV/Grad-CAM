@@ -103,4 +103,4 @@ CHANNEL_LAYERS = {
     },
 }
 
-X_FRAME_OPTIONS = 'https://cloudcv.org/projects/grad-cam'
+X_FRAME_OPTIONS = 'ALLOW-FROM https://cloudcv.org/projects/grad-cam'
